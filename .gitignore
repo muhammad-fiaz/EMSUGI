@@ -1,0 +1,8 @@
+/Backend/venv/
+/app/.idea
+/app/.dart_tool
+/app/build
+/app/android/app/debug
+/app/android/app/profile
+/app/android/app/release
+/Backend/.env
