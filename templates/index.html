@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Emergency Alerts</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Emergency Alerts</h1>
+        <div class="form-container">
+            <form action="/" method="POST">
+                <label for="location">Enter Location:</label>
+                <input type="text" id="location" name="location" required>
+                <button type="submit">Get Alerts</button>
+            </form>
+        </div>
+
+        {% if charts %}
+        <div class="chart-container" style="text-align: center;">
+            <h2>Keyword Frequency Analysis</h2>
+            <img src="{{ url_for('static', filename='keyword_frequency.png') }}" alt="Keyword Frequency Analysis" >
+        </div>
+        {% endif %}
+
+        {% if gemini_report %}
+       <div class="gemini-report-container">
+    <h2>Generative Report</h2>
+    <div>{{ gemini_report | safe }}</div>  <!-- Use the safe filter here -->
+</div>
+
+        {% endif %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Link</th>
+                    <th>Country</th>
+                    <th>Summary</th>
+                    <th>Keywords</th>
+                    <th>Tags</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for alert in alerts %}
+                <tr>
+                    <td>{{ alert[1] }}</td>
+                    <td><a href="{{ alert[2] }}" target="_blank">Link</a></td>
+                    <td>{{ alert[3] }}</td>
+                    <td>{{ alert[4] }}</td>
+                    <td>{{ alert[5] }}</td>
+                    <td>{{ alert[6] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,1 +1,0 @@
-# Emergency Management System using GenAI
