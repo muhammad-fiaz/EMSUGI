@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def init_db():
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()

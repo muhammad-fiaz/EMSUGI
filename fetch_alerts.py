@@ -46,7 +46,8 @@ def fetch_and_store_alerts(location, num_results=5):
             keywords = generate_keywords(title, content)
             summary = generate_summary(content)
 
-            results.append((title, link, country, summary, ', '.join(keywords), ', '.join(tags)))
+            results.append((title, link, country, summary,
+                           ', '.join(keywords), ', '.join(tags)))
 
         # Store results in SQLite, first clear previous alerts
         store_results_in_db(results)

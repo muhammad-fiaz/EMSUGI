@@ -1,3 +1,4 @@
+from logly import logly
 import os
 import requests
 from bs4 import BeautifulSoup
@@ -11,7 +12,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 nltk.download('punkt_tab')
 nltk.download('stopwords')
 
-from logly import logly
 
 # Load environment variables from .env file
 load_dotenv()
@@ -25,10 +25,11 @@ CSV_FILE = "disaster_alerts.csv"
 
 # Predefined emergency words for generating keywords
 EMERGENCY_WORDS = ['disaster', 'emergency', 'crisis', 'alert', 'warning', 'evacuation', 'flood', 'earthquake', 'fire',
-                   'tornado','war','attack','explosion','pandemic','outbreak','epidemic','pandemic','virus','disease','infection','quarantine'
-    ,'lockdown','curfew','storm','volcano']
+                   'tornado', 'war', 'attack', 'explosion', 'pandemic', 'outbreak', 'epidemic', 'pandemic', 'virus', 'disease', 'infection', 'quarantine', 'lockdown', 'curfew', 'storm', 'volcano']
 
 # Step 1: Function to Fetch Disaster and Emergency Alerts Using Bing News Search
+
+
 def search_bing_for_alerts(query, num_results=5):
     logly.info(f"Starting search for '{query}' in Bing News...")
     search_url = f"https://www.bing.com/news/search?q={query}&FORM=HDRSC7"
@@ -75,7 +76,8 @@ def fetch_article_content_and_tags(url):
 
         # Extract main content (this may vary based on the site's structure)
         paragraphs = soup.find_all('p')
-        content = ' '.join([para.get_text() for para in paragraphs if para.get_text()])
+        content = ' '.join([para.get_text()
+                           for para in paragraphs if para.get_text()])
 
         # Generate tags from content
         tags = generate_tags(content)
@@ -90,7 +92,8 @@ def fetch_article_content_and_tags(url):
 def generate_summary(content):
     sentences = nltk.sent_tokenize(content)
     if sentences:
-        return ' '.join(sentences[:2])  # Return the first two sentences as summary
+        # Return the first two sentences as summary
+        return ' '.join(sentences[:2])
     return ""
 
 
@@ -169,8 +172,8 @@ def main():
 # Function to generate a summary report using Gemini API
 def generate_summary_report(alerts):
     report_text = "\n".join([
-                                f"{alert['title']}: {alert['link']}\nCountry: {alert['country']}\nSummary: {alert['summary']}\nKeywords: {', '.join(alert['keywords'])}\nTags: {', '.join(alert['tags'])}\n"
-                                for alert in alerts])
+        f"{alert['title']}: {alert['link']}\nCountry: {alert['country']}\nSummary: {alert['summary']}\nKeywords: {', '.join(alert['keywords'])}\nTags: {', '.join(alert['tags'])}\n"
+        for alert in alerts])
     prompt = f"Generate a news summary report and precaution for peoples for the following emergency alerts:\n\n{report_text}"
     model = genai.GenerativeModel(model_name='gemini-1.5-flash')
 
