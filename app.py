@@ -10,7 +10,11 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask
+from flask import redirect
+from flask import render_template
+from flask import request
+from flask import url_for
 
 from database import init_db
 from fetch_alerts import fetch_and_store_alerts

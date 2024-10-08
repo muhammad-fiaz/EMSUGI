@@ -4,8 +4,9 @@ import sqlite3
 import google.generativeai as genai
 import nltk
 import requests
-from backend.report_general import (fetch_article_content_and_tags,
-                                    generate_keywords, generate_summary)
+from backend.report_general import fetch_article_content_and_tags
+from backend.report_general import generate_keywords
+from backend.report_general import generate_summary
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from logly import logly
