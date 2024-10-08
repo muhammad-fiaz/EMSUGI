@@ -1,18 +1,15 @@
 import os
-import requests
-from bs4 import BeautifulSoup
-import google.generativeai as genai
-from dotenv import load_dotenv
-import nltk
-from sklearn.feature_extraction.text import TfidfVectorizer
 import sqlite3
-from logly import logly
 
-from backend.report_general import (
-    generate_keywords,
-    fetch_article_content_and_tags,
-    generate_summary,
-)
+import google.generativeai as genai
+import nltk
+import requests
+from backend.report_general import (fetch_article_content_and_tags,
+                                    generate_keywords, generate_summary)
+from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+from logly import logly
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Load NLTK resources
 nltk.download("punkt")

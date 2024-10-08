@@ -1,11 +1,12 @@
-from logly import logly
 import os
+
+import google.generativeai as genai
+import nltk
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import google.generativeai as genai
 from dotenv import load_dotenv
-import pandas as pd
-import nltk
+from logly import logly
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 # Load NLTK resources

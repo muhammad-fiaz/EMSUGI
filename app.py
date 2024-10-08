@@ -1,17 +1,19 @@
 import os
+import sqlite3
+from datetime import datetime
+
+import google.generativeai as genai
+import markdown  # Import the markdown library
+import matplotlib.pyplot as plt
+import nltk
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import google.generativeai as genai
 from dotenv import load_dotenv
-import nltk
-import sqlite3
-import matplotlib.pyplot as plt
-import pandas as pd
-import markdown  # Import the markdown library
-from flask import Flask, render_template, request, redirect, url_for
-from fetch_alerts import fetch_and_store_alerts
+from flask import Flask, redirect, render_template, request, url_for
+
 from database import init_db
-from datetime import datetime
+from fetch_alerts import fetch_and_store_alerts
 
 # Load NLTK resources
 nltk.download("punkt")
