@@ -1,0 +1,12 @@
+/venv/
+/app/.idea
+/app/.dart_tool
+/app/build
+/app/android/app/debug
+/app/android/app/profile
+/app/android/app/release
+/.env
+/disaster_alerts.db
+log.txt
+/.venv/
+/bin/
