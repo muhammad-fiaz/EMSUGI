@@ -56,9 +56,10 @@ def index():
     # Generate Gemini report
     gemini_report = generate_gemini_report(alerts)
 
-    return render_template(
-        "index.html", alerts=alerts, charts=charts, gemini_report=gemini_report
-    )
+    return render_template("index.html",
+                           alerts=alerts,
+                           charts=charts,
+                           gemini_report=gemini_report)
 
 
 def generate_analysis_charts(alerts):
@@ -89,15 +90,16 @@ def generate_analysis_charts(alerts):
 
     # Ensure the lengths of lists are consistent before creating the DataFrame
     if len(keywords_list) != len(dates_list) or len(keywords_list) != len(
-        countries_list
-    ):
+            countries_list):
         raise ValueError(
             "The lengths of keywords, dates, and countries lists are not the same."
         )
 
-    df = pd.DataFrame(
-        {"keywords": keywords_list, "dates": dates_list, "countries": countries_list}
-    )
+    df = pd.DataFrame({
+        "keywords": keywords_list,
+        "dates": dates_list,
+        "countries": countries_list
+    })
 
     # Generate Keyword Frequency Histogram
     keyword_counts = df["keywords"].value_counts()
@@ -123,13 +125,11 @@ def generate_gemini_report(alerts):
     # Create a report based on alerts
     report_data = []
     for alert in alerts:
-        report_data.append(
-            {
-                "title": alert[1],  # Assuming title is in the 2nd column
-                "summary": alert[4],  # Assuming summary is in the 5th column
-                "link": alert[2],  # Assuming link is in the 3rd column
-            }
-        )
+        report_data.append({
+            "title": alert[1],  # Assuming title is in the 2nd column
+            "summary": alert[4],  # Assuming summary is in the 5th column
+            "link": alert[2],  # Assuming link is in the 3rd column
+        })
 
     # Generate report text using Gemini AI
     report_text = genai.GenerativeModel(model_name="gemini-1.5-flash")

@@ -13,7 +13,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 nltk.download("punkt_tab")
 nltk.download("stopwords")
 
-
 # Load environment variables from .env file
 load_dotenv()
 
@@ -83,16 +82,14 @@ def search_bing_for_alerts(query, num_results=5):
             keywords = generate_keywords(title, content)
             summary = generate_summary(content)
 
-            results.append(
-                {
-                    "title": title,
-                    "link": link,
-                    "country": country,
-                    "summary": summary,
-                    "keywords": keywords,
-                    "tags": tags,
-                }
-            )
+            results.append({
+                "title": title,
+                "link": link,
+                "country": country,
+                "summary": summary,
+                "keywords": keywords,
+                "tags": tags,
+            })
 
         logly.info(f"Found {len(results)} results.")
         return results
@@ -115,7 +112,8 @@ def fetch_article_content_and_tags(url):
 
         # Extract main content (this may vary based on the site's structure)
         paragraphs = soup.find_all("p")
-        content = " ".join([para.get_text() for para in paragraphs if para.get_text()])
+        content = " ".join(
+            [para.get_text() for para in paragraphs if para.get_text()])
 
         # Generate tags from content
         tags = generate_tags(content)
@@ -175,9 +173,8 @@ def generate_tags(content):
     """
     words = nltk.word_tokenize(content)
     filtered_words = [
-        word
-        for word in words
-        if word.isalnum() and word.lower() not in nltk.corpus.stopwords.words("english")
+        word for word in words if word.isalnum()
+        and word.lower() not in nltk.corpus.stopwords.words("english")
     ]
     return list(set(filtered_words))[:5]  # Return up to 5 unique tags
 
@@ -244,12 +241,10 @@ def generate_summary_report(alerts):
     :param alerts:
 
     """
-    report_text = "\n".join(
-        [
-            f"{alert['title']}: {alert['link']}\nCountry: {alert['country']}\nSummary: {alert['summary']}\nKeywords: {', '.join(alert['keywords'])}\nTags: {', '.join(alert['tags'])}\n"
-            for alert in alerts
-        ]
-    )
+    report_text = "\n".join([
+        f"{alert['title']}: {alert['link']}\nCountry: {alert['country']}\nSummary: {alert['summary']}\nKeywords: {', '.join(alert['keywords'])}\nTags: {', '.join(alert['tags'])}\n"
+        for alert in alerts
+    ])
     prompt = f"Generate a news summary report and precaution for peoples for the following emergency alerts:\n\n{report_text}"
     model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
