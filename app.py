@@ -29,6 +29,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    """ """
     if request.method == "POST":
         location = request.form["location"]  # Get the user input
 
@@ -57,6 +58,11 @@ def index():
 
 
 def generate_analysis_charts(alerts):
+    """
+
+    :param alerts: 
+
+    """
     charts = []
 
     # Create DataFrame for analysis
@@ -105,6 +111,11 @@ def generate_analysis_charts(alerts):
 
 
 def generate_gemini_report(alerts):
+    """
+
+    :param alerts: 
+
+    """
     # Create a report based on alerts
     report_data = []
     for alert in alerts:

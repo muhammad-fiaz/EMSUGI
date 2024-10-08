@@ -57,6 +57,12 @@ EMERGENCY_WORDS = [
 
 
 def search_bing_for_alerts(query, num_results=5):
+    """
+
+    :param query: 
+    :param num_results:  (Default value = 5)
+
+    """
     logly.info(f"Starting search for '{query}' in Bing News...")
     search_url = f"https://www.bing.com/news/search?q={query}&FORM=HDRSC7"
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -98,6 +104,11 @@ def search_bing_for_alerts(query, num_results=5):
 
 # Function to fetch article content and generate tags
 def fetch_article_content_and_tags(url):
+    """
+
+    :param url: 
+
+    """
     try:
         response = requests.get(url)
         soup = BeautifulSoup(response.text, "html.parser")
@@ -117,6 +128,11 @@ def fetch_article_content_and_tags(url):
 
 # Function to generate a summary of the article
 def generate_summary(content):
+    """
+
+    :param content: 
+
+    """
     sentences = nltk.sent_tokenize(content)
     if sentences:
         # Return the first two sentences as summary
@@ -126,6 +142,12 @@ def generate_summary(content):
 
 # Function to generate keywords based on title and content
 def generate_keywords(title, content):
+    """
+
+    :param title: 
+    :param content: 
+
+    """
     combined_text = title + " " + content
     keywords = []
 
@@ -146,6 +168,11 @@ def generate_keywords(title, content):
 
 # Function to generate tags from content
 def generate_tags(content):
+    """
+
+    :param content: 
+
+    """
     words = nltk.word_tokenize(content)
     filtered_words = [
         word
@@ -157,6 +184,11 @@ def generate_tags(content):
 
 # Function to check if the URL already exists in the CSV
 def is_url_existing(url):
+    """
+
+    :param url: 
+
+    """
     if os.path.exists(CSV_FILE):
         df = pd.read_csv(CSV_FILE)
         return url in df["link"].values
@@ -165,6 +197,11 @@ def is_url_existing(url):
 
 # Function to append new articles to the CSV
 def append_to_csv(alerts):
+    """
+
+    :param alerts: 
+
+    """
     new_alerts = []
     for alert in alerts:
         if not is_url_existing(alert["link"]):
@@ -180,6 +217,7 @@ def append_to_csv(alerts):
 
 # Main function to execute the emergency management system
 def main():
+    """ """
     location = "israel"
     query = location + " news today"
     num_results = 25  # Number of results to fetch
@@ -201,6 +239,11 @@ def main():
 
 # Function to generate a summary report using Gemini API
 def generate_summary_report(alerts):
+    """
+
+    :param alerts: 
+
+    """
     report_text = "\n".join(
         [
             f"{alert['title']}: {alert['link']}\nCountry: {alert['country']}\nSummary: {alert['summary']}\nKeywords: {', '.join(alert['keywords'])}\nTags: {', '.join(alert['tags'])}\n"

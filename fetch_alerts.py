@@ -28,6 +28,12 @@ EMERGENCY_WORDS = [...]  # Your emergency words list here
 
 # Function to fetch and store alerts
 def fetch_and_store_alerts(location, num_results=5):
+    """
+
+    :param location: 
+    :param num_results:  (Default value = 5)
+
+    """
     query = f"{location} news today"
     logly.info(f"Starting search for '{query}' in Bing News...")
     search_url = f"https://www.bing.com/news/search?q={query}&FORM=HDRSC7"
@@ -59,6 +65,11 @@ def fetch_and_store_alerts(location, num_results=5):
 
 
 def store_results_in_db(alerts):
+    """
+
+    :param alerts: 
+
+    """
     conn = sqlite3.connect("disaster_alerts.db")
     c = conn.cursor()
 
