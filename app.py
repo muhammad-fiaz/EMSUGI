@@ -64,7 +64,7 @@ def index():
 def generate_analysis_charts(alerts):
     """
 
-    :param alerts: 
+    :param alerts:
 
     """
     charts = []
@@ -117,7 +117,7 @@ def generate_analysis_charts(alerts):
 def generate_gemini_report(alerts):
     """
 
-    :param alerts: 
+    :param alerts:
 
     """
     # Create a report based on alerts

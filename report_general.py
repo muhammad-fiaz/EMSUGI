@@ -59,7 +59,7 @@ EMERGENCY_WORDS = [
 def search_bing_for_alerts(query, num_results=5):
     """
 
-    :param query: 
+    :param query:
     :param num_results:  (Default value = 5)
 
     """
@@ -106,7 +106,7 @@ def search_bing_for_alerts(query, num_results=5):
 def fetch_article_content_and_tags(url):
     """
 
-    :param url: 
+    :param url:
 
     """
     try:
@@ -130,7 +130,7 @@ def fetch_article_content_and_tags(url):
 def generate_summary(content):
     """
 
-    :param content: 
+    :param content:
 
     """
     sentences = nltk.sent_tokenize(content)
@@ -144,8 +144,8 @@ def generate_summary(content):
 def generate_keywords(title, content):
     """
 
-    :param title: 
-    :param content: 
+    :param title:
+    :param content:
 
     """
     combined_text = title + " " + content
@@ -170,7 +170,7 @@ def generate_keywords(title, content):
 def generate_tags(content):
     """
 
-    :param content: 
+    :param content:
 
     """
     words = nltk.word_tokenize(content)
@@ -186,7 +186,7 @@ def generate_tags(content):
 def is_url_existing(url):
     """
 
-    :param url: 
+    :param url:
 
     """
     if os.path.exists(CSV_FILE):
@@ -199,7 +199,7 @@ def is_url_existing(url):
 def append_to_csv(alerts):
     """
 
-    :param alerts: 
+    :param alerts:
 
     """
     new_alerts = []
@@ -241,7 +241,7 @@ def main():
 def generate_summary_report(alerts):
     """
 
-    :param alerts: 
+    :param alerts:
 
     """
     report_text = "\n".join(

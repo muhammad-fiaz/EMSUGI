@@ -31,7 +31,7 @@ EMERGENCY_WORDS = [...]  # Your emergency words list here
 def fetch_and_store_alerts(location, num_results=5):
     """
 
-    :param location: 
+    :param location:
     :param num_results:  (Default value = 5)
 
     """
@@ -68,7 +68,7 @@ def fetch_and_store_alerts(location, num_results=5):
 def store_results_in_db(alerts):
     """
 
-    :param alerts: 
+    :param alerts:
 
     """
     conn = sqlite3.connect("disaster_alerts.db")
