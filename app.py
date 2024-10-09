@@ -121,6 +121,7 @@ def regenerate_report():
     return jsonify({'report': gemini_report})
 
 
+
 def generate_analysis_charts(alerts):
     charts = []
 
@@ -179,6 +180,7 @@ def generate_gemini_report(alerts):
     report_text = report_text.generate_content(
         f"you are now a Reporter you will help people to report the emergency time about current scenario, so Generate an emergency and disaster and war times summary report and precaution for people for the following emergency alerts:\n\n{report_data}")
 
+
     # Convert the Markdown response to HTML
     report_html = markdown.markdown(report_text.text)
 
@@ -190,6 +192,7 @@ def generate_gemini_report(alerts):
     conn.close()
 
     return report_html
+
 
 
 

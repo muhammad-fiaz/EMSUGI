@@ -1,6 +1,7 @@
 import os
 import sqlite3
 
+
 import requests
 from bs4 import BeautifulSoup
 import google.generativeai as genai
@@ -8,6 +9,7 @@ from dotenv import load_dotenv
 import nltk
 from logly import logly
 from report_general import fetch_article_content_and_tags, generate_summary, generate_keywords
+
 
 # Load NLTK resources
 nltk.download('punkt')
@@ -24,6 +26,7 @@ genai.configure(api_key=gemini_api_key)
 EMERGENCY_WORDS = [...]  # Your emergency words list here
 from datetime import datetime  # Import datetime
 
+
 def fetch_and_store_alerts(location, num_results=5):
     query = f"{location} news today"
     logly.info(f"Starting search for '{query}' in Bing News...")
@@ -32,10 +35,12 @@ def fetch_and_store_alerts(location, num_results=5):
 
     results = []  # Store fetched results to return
 
+
     try:
         response = requests.get(search_url, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
+
 
         for li in soup.find_all('a', class_='title')[:num_results]:
             title = li.get_text() if li else "No title"
@@ -54,6 +59,7 @@ def fetch_and_store_alerts(location, num_results=5):
         store_results_in_current_db(results)
 
         # Also store the results in the alerts history table
+
         store_results_in_db(results)
 
     except requests.exceptions.RequestException as e:
@@ -79,6 +85,7 @@ def store_results_in_current_db(alerts):
     conn.commit()
     conn.close()
 
+
 def store_results_in_db(alerts):
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()
@@ -88,6 +95,7 @@ def store_results_in_db(alerts):
         try:
             c.execute('''INSERT OR IGNORE INTO alerts (title, link, country, summary, keywords, tags, date)
                           VALUES (?, ?, ?, ?, ?, ?, ?)''', alert)
+
         except Exception as e:
             logly.error(f"Error inserting alert into database: {e}")
 

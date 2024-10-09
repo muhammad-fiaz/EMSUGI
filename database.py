@@ -22,6 +22,7 @@ def init_db():
     # Create the current alerts table for the latest fetched alerts
     c.execute('''
         CREATE TABLE IF NOT EXISTS current_alerts (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             link TEXT UNIQUE,
@@ -41,6 +42,7 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
 
     conn.commit()
     conn.close()
