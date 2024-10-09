@@ -21,6 +21,7 @@ bs4 = "^0.0.2"
 logly = "^0.0.6"
 sentence-transformers = "^3.1.1"
 matplotlib = "^3.4.3"
+tensorflow = "^2.7.0"
 
 
 [build-system]
