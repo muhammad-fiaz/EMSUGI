@@ -12,11 +12,15 @@ python = "^3.11"
 google-generativeai = "^0.8.1"
 python-dotenv = "^1.0.1"
 requests = "^2.32.3"
-langchain = "^0.3.2"
+scikit-learn = "^1.0.2"
+torch = "^1.10.0"
+torchvision = "^0.11.1"
+nltk = "^3.6.5"
 transformers = "^4.45.1"
 bs4 = "^0.0.2"
 logly = "^0.0.6"
 sentence-transformers = "^3.1.1"
+matplotlib = "^3.4.3"
 
 
 [build-system]

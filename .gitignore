@@ -10,3 +10,4 @@
 log.txt
 /.venv/
 /bin/
+/static/keyword_frequency.png
