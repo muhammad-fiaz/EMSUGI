@@ -8,7 +8,7 @@ import sqlite3
 import matplotlib.pyplot as plt
 import pandas as pd
 import markdown  # Import the markdown library
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
 from fetch_alerts import fetch_and_store_alerts
 from database import init_db
 from datetime import datetime
@@ -23,29 +23,104 @@ gemini_api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=gemini_api_key)
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY")  # Make sure to set this in your .env file
 
-@app.route('/', methods=['GET', 'POST'])
+
+@app.route('/', methods=['GET'])
 def index():
-    if request.method == 'POST':
-        location = request.form['location']  # Get the user input
+    # Clear session variable on accessing the index page
+    session.pop('can_access_report', None)
+    return render_template('index.html')
 
-        fetch_and_store_alerts(location, num_results=25)  # Fetch alerts based on user input
-        return redirect(url_for('index'))  # Redirect to GET method to display alerts
-
-    # For GET request, retrieve data from the database
+@app.route('/reports', methods=['GET'])
+def reports():
+    # Connect to the database
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM alerts ORDER BY id DESC")  # Fetch alerts in reverse order
-    alerts = c.fetchall()
+
+    # Retrieve all gemini reports from the database, including created_at
+    c.execute("SELECT id, report, created_at FROM gemini_reports ORDER BY id DESC")
+    gemini_reports = c.fetchall()
+
     conn.close()
 
-    # Generate analysis charts
-    charts = generate_analysis_charts(alerts)
+    # Render the reports template with the fetched data
+    return render_template('reports.html', gemini_reports=gemini_reports)
 
-    # Generate Gemini report
-    gemini_report = generate_gemini_report(alerts)
+@app.route('/loading', methods=['POST'])
+def loading():
+    location = request.form['location']
 
-    return render_template('index.html', alerts=alerts, charts=charts, gemini_report=gemini_report)
+    # Fetch alerts and process data
+    fetch_and_store_alerts(location, num_results=25)
+
+    # Set session variable to allow access to the report page
+    session['can_access_report'] = True
+
+    # Respond with a JSON object indicating that processing is complete
+    return jsonify({'status': 'completed'})
+
+
+@app.route('/history', methods=['GET'])
+def history():
+    # Connect to the database
+    conn = sqlite3.connect('disaster_alerts.db')
+    c = conn.cursor()
+
+    # Retrieve all history data in descending order (most recent first)
+    c.execute("SELECT * FROM alerts ORDER BY id DESC")
+    history_data = c.fetchall()
+
+    conn.close()
+
+    # Render the history template with the fetched data
+    return render_template('history.html', history=history_data)
+
+
+@app.route('/report', methods=['GET'])
+def report():
+    # Check if the user is allowed to access this page
+    if not session.get('can_access_report'):
+        flash("You need to perform a search first.")
+        return redirect(url_for('index'))  # Redirect to the main page if not allowed
+
+    # Retrieve data from the current_alerts table
+    conn = sqlite3.connect('disaster_alerts.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM current_alerts ORDER BY id DESC")
+    current_alerts = c.fetchall()
+    conn.close()
+
+    # Generate charts and report based on current alerts
+    charts = generate_analysis_charts(current_alerts)
+    if not charts:
+        return "No data available to generate charts."
+
+    gemini_report = generate_gemini_report(current_alerts)
+
+    # Clear the session variable after rendering the report
+    session.pop('can_access_report', None)
+
+    # Render the report page
+    return render_template('report.html', alerts=current_alerts, charts=charts, gemini_report=gemini_report)
+
+
+@app.route('/regenerate-report', methods=['POST'])
+def regenerate_report():
+    # Retrieve data from the current_alerts table
+    conn = sqlite3.connect('disaster_alerts.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM current_alerts ORDER BY id DESC")
+    current_alerts = c.fetchall()
+    conn.close()
+
+    # Generate a new report using the current alerts
+    gemini_report = generate_gemini_report(current_alerts)
+
+    # Return the new report as JSON
+    return jsonify({'report': gemini_report})
+
+
 
 def generate_analysis_charts(alerts):
     charts = []
@@ -89,6 +164,7 @@ def generate_analysis_charts(alerts):
 
     return charts
 
+
 def generate_gemini_report(alerts):
     # Create a report based on alerts
     report_data = []
@@ -102,12 +178,23 @@ def generate_gemini_report(alerts):
     # Generate report text using Gemini AI
     report_text = genai.GenerativeModel(model_name='gemini-1.5-flash')
     report_text = report_text.generate_content(
-        f"you are now a Reporter you will help people to report the emergency time about current scenerio, so Generate a emergency and disaster and war times summary report and precaution for people for the following emergency alerts:\n\n{report_data}")
+        f"you are now a Reporter you will help people to report the emergency time about current scenario, so Generate an emergency and disaster and war times summary report and precaution for people for the following emergency alerts:\n\n{report_data}")
+
 
     # Convert the Markdown response to HTML
     report_html = markdown.markdown(report_text.text)
 
+    # Store the generated report in the database with the current timestamp
+    conn = sqlite3.connect('disaster_alerts.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO gemini_reports (report, created_at) VALUES (?, ?)", (report_html, datetime.now()))
+    conn.commit()
+    conn.close()
+
     return report_html
+
+
+
 
 if __name__ == '__main__':
     init_db()  # Initialize the database

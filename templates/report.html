@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <title>Emergency Alerts Report</title>
+    <style>
+        /* Custom background pattern with animation */
+        @keyframes gradient-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .bg-pattern {
+            background: linear-gradient(135deg, #3b82f6, #9333ea);
+            background-size: 400% 400%; /* Larger for smooth gradient animation */
+            animation: gradient-animation 10s ease infinite; /* Smooth background animation */
+        }
+
+        .rounded-shadow {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for containers */
+        }
+    </style>
+    <script>
+        async function regenerateReport() {
+            const button = document.getElementById('regenerate-button');
+            button.disabled = true; // Disable the button while loading
+            button.innerText = 'Loading...'; // Change button text to indicate loading
+
+            const response = await fetch('/regenerate-report', {
+                method: 'POST',
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('gemini-report').innerHTML = data.report; // Update the report section
+            }
+
+            button.disabled = false; // Re-enable the button
+            button.innerText = 'Regenerate'; // Reset button text
+        }
+    </script>
+</head>
+<body class="bg-pattern text-gray-900 font-sans">
+<div class="absolute top-0 right-0 p-6">
+        <a href="/" class="text-lg text-white underline">Go Back</a>
+    </div>
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h1 class="text-4xl font-bold text-center text-gray-100 mb-6">Emergency Alerts Report</h1>
+
+        {% if gemini_report %}
+        <div class="gemini-report-container mb-6">
+            <div class="bg-white p-4 sm:p-6 border border-gray-300 rounded-lg shadow-lg text-base sm:text-lg mb-4">
+                <h2 class="text-2xl sm:text-3xl font-semibold text-gray-800 mb-4">Generative Report</h2>
+                <div id="gemini-report">{{ gemini_report | safe }}</div> <!-- Update to a div -->
+                <button id="regenerate-button" onclick="regenerateReport()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Regenerate</button>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if charts %}
+        <div class="chart-container text-center mb-6">
+            <h3 class="text-3xl sm:text-4xl font-bold text-gray-100 mb-6">Analysis</h3>
+            <div class="rounded-lg overflow-hidden shadow-md w-full sm:w-2/3 lg:w-1/2 mx-auto">
+                <img src="{{ url_for('static', filename='keyword_frequency.png') }}" alt="Keyword Frequency Analysis" class="w-full h-auto rounded-lg">
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="chart-container text-center mb-6">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-100 mb-6">Reference</h2>
+            <div class="rounded-lg border border-gray-300 shadow-md overflow-hidden">
+                <table class="min-w-full bg-white">
+                    <thead>
+                        <tr class="bg-gray-200 text-gray-700">
+                            <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Title</th>
+                            <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Link</th>
+                            <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Country</th>
+                            <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Summary</th>
+                            <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Keywords</th>
+                            <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alert in alerts %}
+                        <tr class="hover:bg-gray-100">
+                            <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[1] }}</td>
+                            <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">
+                                <a href="{{ alert[2] }}" target="_blank" class="text-blue-600 hover:underline">Source</a>
+                            </td>
+                            <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[3] }}</td>
+                            <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[4] }}</td>
+                            <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[5] }}</td>
+                            <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[6] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

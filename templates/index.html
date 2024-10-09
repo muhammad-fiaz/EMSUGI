@@ -3,59 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Emergency Alerts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <title>Emergency Alerts Management Systems</title>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'gray-1000': '#1a202c',
+                        'gray-900': '#2d3748',
+                        'gray-800': '#4a5568',
+                        'gray-700': '#718096',
+                        'gray-600': '#a0aec0',
+                        'gray-500': '#cbd5e0',
+                        'gray-400': '#e2e8f0',
+                        'gray-300': '#edf2f7',
+                        'gray-200': '#f7fafc',
+                        'gray-100': '#f7fafc',
+                        'gray-50': '#f7fafc',
+                    },
+                    fontFamily: {
+                        sans: ['Open Sans', 'sans-serif'],
+                    },
+                    spacing: {
+                        '72': '18rem',
+                        '84': '21rem',
+                        '96': '24rem',
+                    },
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '2rem',
+                        '3xl': '3rem',
+                        'full': '9999px',
+                    },
+                    boxShadow: {
+                        'lg': '0 1rem 2rem 0 rgba(0, 0, 0, 0.1)',
+                        'xl': '0 1rem 3rem 0 rgba(0, 0, 0, 0.1)',
+                        '2xl': '0 1rem 4rem 0 rgba(0, 0, 0, 0.1)',
+                        '3xl': '0 1rem 6rem 0 rgba(0, 0, 0, 0.1)',
+                        'inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
+                        'none': 'none',
+                    },
+                    maxWidth: {
+                        '7xl': '80rem',
+                    },
+                    zIndex: {
+                        '50': 50,
+                        '100': 100,
+                    },
+                },
+            },
+            variants: {
+                extend: {
+                    backgroundColor: ['active'],
+                    textColor: ['active'],
+                    borderColor: ['active'],
+                    boxShadow: ['active'],
+                }
+            },
+            plugins: [require('@tailwindcss/forms')],
+        }
+    </script>
+    <style>
+        /* Custom background pattern with animation */
+        @keyframes gradient-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .bg-pattern {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #3b82f6, #9333ea);
+            background-size: 400% 400%; /* Make background larger for animation */
+            animation: gradient-animation 15s ease infinite; /* Animation on the background */
+        }
+
+        .bg-pattern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: repeating-linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.1) 0,
+                rgba(255, 255, 255, 0.1) 1px,
+                transparent 1px,
+                transparent 50px
+            );
+            z-index: 0;
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Custom styles for the input field */
+        input:focus {
+            outline: none; /* Remove default outline */
+            box-shadow: none; /* Remove blue focus ring */
+            border-color: inherit; /* Maintain the same border color */
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Emergency Alerts</h1>
-        <div class="form-container">
-            <form action="/" method="POST">
-                <label for="location">Enter Location:</label>
-                <input type="text" id="location" name="location" required>
-                <button type="submit">Get Alerts</button>
-            </form>
-        </div>
-
-        {% if charts %}
-        <div class="chart-container" style="text-align: center;">
-            <h2>Keyword Frequency Analysis</h2>
-            <img src="{{ url_for('static', filename='keyword_frequency.png') }}" alt="Keyword Frequency Analysis" >
-        </div>
-        {% endif %}
-
-        {% if gemini_report %}
-       <div class="gemini-report-container">
-    <h2>Generative Report</h2>
-    <div>{{ gemini_report | safe }}</div>  <!-- Use the safe filter here -->
+<body class="bg-pattern text-gray-900 flex items-center justify-center min-h-screen">
+<div class="absolute top-0 right-0 p-6">
+    <a href="/history" class="text-lg text-white underline mr-4">History</a>
+    <a href="/reports" class="text-lg text-white underline">Reports</a>
 </div>
 
-        {% endif %}
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Link</th>
-                    <th>Country</th>
-                    <th>Summary</th>
-                    <th>Keywords</th>
-                    <th>Tags</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for alert in alerts %}
-                <tr>
-                    <td>{{ alert[1] }}</td>
-                    <td><a href="{{ alert[2] }}" target="_blank">Link</a></td>
-                    <td>{{ alert[3] }}</td>
-                    <td>{{ alert[4] }}</td>
-                    <td>{{ alert[5] }}</td>
-                    <td>{{ alert[6] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="container mx-auto p-6 flex flex-col items-center content">
+        <h1 class="text-4xl font-bold text-center text-gray-100 mb-6">Generate Your Report!</h1>
+        <div class="form-container mb-4 w-full">
+            <form id="alertForm" action="/loading" method="POST" class="flex flex-col items-center">
+                <label for="location" class="sr-only">Location</label>
+                <div class="relative w-full mb-4">
+                    <input type="text" id="location" name="location" required
+                           class="w-full p-6 pr-12 border border-gray-300 rounded-full focus:outline-none mx-4"
+                           placeholder="Search">
+                    <span class="absolute inset-y-0 right-3 flex items-center text-gray-500 cursor-pointer" id="location-icon">
+                        <i class="fas fa-location-arrow"></i> <!-- Clickable icon -->
+                    </span>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <!-- Loading Popup -->
+    <div id="loading" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50" style="display: none;">
+        <div class="text-center bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+            <div id="lottie-animation" class="w-64 h-64 mb-4"></div> <!-- Increased size -->
+            <h2 class="text-2xl text-gray-600">Please wait while we are generating...</h2>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('alertForm');
+        const loading = document.getElementById('loading');
+        const locationIcon = document.getElementById('location-icon');
+        const locationInput = document.getElementById('location');
+
+        // Initialize Lottie animation
+        const animation = lottie.loadAnimation({
+            container: document.getElementById('lottie-animation'), // the DOM element that will contain the animation
+            renderer: 'svg',
+            loop: true,
+            autoplay: true,
+            path: 'https://lottie.host/00db5f22-8176-422c-91e2-360867e775a2/o2rLveFQvV.json' // URL of the Lottie animation
+        });
+
+        // Add click event to the location icon
+        locationIcon.addEventListener('click', function(event) {
+            event.preventDefault();
+            loading.style.display = 'flex'; // Show loading popup
+            disableIcon(); // Disable the icon
+
+            submitForm();
+        });
+
+        // Add keydown event to the input field for Enter key
+        locationInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent default form submission
+                loading.style.display = 'flex'; // Show loading popup
+                disableIcon(); // Disable the icon
+
+                submitForm();
+            }
+        });
+
+        function submitForm() {
+            const formData = new FormData(form);
+            fetch('/loading', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'completed') {
+                    window.location.href = '/report'; // Redirect to report page
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loading.style.display = 'none'; // Hide loading animation on error
+                enableIcon(); // Re-enable icon if there's an error
+            });
+        }
+
+        function disableIcon() {
+            locationIcon.classList.add('text-gray-400'); // Change icon color to indicate disabled state
+            locationIcon.classList.remove('text-gray-500');
+            locationIcon.style.pointerEvents = 'none'; // Disable click on icon
+        }
+
+        function enableIcon() {
+            locationIcon.classList.remove('text-gray-400'); // Reset icon color
+            locationIcon.classList.add('text-gray-500');
+            locationIcon.style.pointerEvents = 'auto'; // Re-enable click on icon
+        }
+    </script>
 </body>
 </html>
