@@ -36,8 +36,8 @@ Below are some screenshots showing the features and layout of the system:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/muhammad-fiaz/emergency-management-system.git
-   cd emergency-management-system
+   git clone https://github.com/muhammad-fiaz/Emergency-Management-System-using-Generative-AI.git
+   cd Emergency-Management-System-using-Generative-AI
    ```
 
 2. Install the dependencies:
