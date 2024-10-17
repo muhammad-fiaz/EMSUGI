@@ -6,6 +6,9 @@ authors = ["Muhammad Fiaz <contact@muhammadfiaz.com>"]
 repository = "https://github.com/muhammad-fiaz/Emergency-Management-System-using-Generative-AI.git"
 license = "MIT"
 readme = "README.md"
+lang = "en"
+keywords = ["emergency", "management", "system", "generative", "ai"]
+homepage = "https://github.com/muhammad-fiaz/Emergency-Management-System-using-Generative-AI#readme"
 
 [tool.poetry.dependencies]
 python = "^3.11"
