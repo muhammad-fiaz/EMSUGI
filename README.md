@@ -14,6 +14,9 @@ The **Emergency Management System Using Generative AI** is a sophisticated appli
 - **Keyword and Topic Analysis**: Identifies popular keywords and topics by country and region.
 - **Responsive Design**: Supports a mobile-friendly and responsive layout for viewing reports.
 
+
+> **NOTE** These features are based project's future intention so the actual performance and feature may vary due to active development phases
+
 ## Screenshots
 
 Below are some screenshots showing the features and layout of the system:
