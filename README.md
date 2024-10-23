@@ -36,6 +36,7 @@ Below are some screenshots showing the features and layout of the system:
 - **Flask** (Web framework)
 - **pandas** (For data manipulation)
 - **matplotlib** (For data visualization)
+- **gemini** (for Generative report)
 
 ### Installation:
 
