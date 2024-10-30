@@ -60,6 +60,10 @@ Below are some screenshots showing the features and layout of the system:
    ```
    http://127.0.0.1:5000/
    ```
+# Running with Docker
+
+If you'd like to run this project using Docker, check out the [docker_readme.md](DOCKER_README.md) file for a step-by-step guide on building, 
+running, and managing the EMSUGI application in a Docker container.
 
 ### Folder Structure:
 ```bash
@@ -70,6 +74,8 @@ Below are some screenshots showing the features and layout of the system:
 ├── static/                 # Static files (CSS, JS, images)
 │   ├── styles.css
 ├── database_alerts.db         # stored Database
+├── Dockerfile              # Docker configuration file
+├── CODE_OF_CONDUCT.md      # Code of conduct for contributors
 └── README.md               # Project documentation
 ```
 
@@ -81,7 +87,8 @@ Below are some screenshots showing the features and layout of the system:
 
 ## Contributing
 
-We welcome contributions! Feel free to submit issues and pull requests to improve the project.
+We welcome contributions! Feel free to submit issues and pull requests to improve the project. 
+When contributing, please make sure to follow our [Code of Conduct](CODE_OF_CONDUCT.md) to maintain a respectful and collaborative environment for all contributors.
 
 ## License
 
