@@ -1,10 +1,10 @@
-# Emergency Management System Using Generative AI
+# EMSUGI
 
 > This Project is Still in Active Development!
 
 ## Project Overview
 
-The **Emergency Management System Using Generative AI** is a sophisticated application designed to gather and analyze emergency alerts from various sources. It leverages generative AI to predict future incidents based on historical data and current trends. This system aims to enhance the efficiency of emergency responses by providing insightful reports and visual analytics.
+The **EMSUGI** is a sophisticated application designed to gather and analyze emergency alerts from various sources. It leverages generative AI to predict future incidents based on historical data and current trends. This system aims to enhance the efficiency of emergency responses by providing insightful reports and visual analytics.
 
 ### Key Features:
 - **Real-Time Alert Monitoring**: Fetches and stores emergency alerts across different countries.
@@ -42,8 +42,8 @@ Below are some screenshots showing the features and layout of the system:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/muhammad-fiaz/Emergency-Management-System-using-Generative-AI.git
-   cd Emergency-Management-System-using-Generative-AI
+   git clone https://github.com/muhammad-fiaz/EMSUGI.git
+   cd EMSUGI
    ```
 
 2. Install the dependencies:
