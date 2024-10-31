@@ -50,12 +50,24 @@ app.secret_key = os.getenv("SECRET_KEY")  # Make sure to set this in your .env f
 
 @app.route('/', methods=['GET'])
 def index():
+    """
+    Renders the index page and clears the session variable.
+
+    Returns:
+        str: Rendered HTML template for the index page.
+    """
     # Clear session variable on accessing the index page
     session.pop('can_access_report', None)
     return render_template('index.html')
 
 @app.route('/reports', methods=['GET'])
 def reports():
+    """
+      Retrieves all Gemini reports from the database and renders the reports page.
+
+      Returns:
+          str: Rendered HTML template for the reports page with fetched data.
+      """
     # Connect to the database
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()
@@ -71,6 +83,15 @@ def reports():
 
 @app.route('/loading', methods=['POST'])
 def loading():
+    """
+     Fetches alerts for a given location and processes the data.
+
+     Args:
+         location (str): The location to search for news alerts.
+
+     Returns:
+         json: JSON object indicating that processing is complete.
+     """
     location = request.form['location']
 
     # Fetch alerts and process data
@@ -85,6 +106,12 @@ def loading():
 
 @app.route('/history', methods=['GET'])
 def history():
+    """
+      Retrieves all historical alert data from the database and renders the history page.
+
+      Returns:
+          str: Rendered HTML template for the history page with fetched data.
+      """
     # Connect to the database
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()
@@ -101,6 +128,12 @@ def history():
 
 @app.route('/report', methods=['GET'])
 def report():
+    """
+      Generates and renders a report based on current alerts.
+
+      Returns:
+          str: Rendered HTML template for the report page with generated charts and report.
+      """
     # Check if the user is allowed to access this page
     if not session.get('can_access_report'):
         flash("You need to perform a search first.")
@@ -129,6 +162,12 @@ def report():
 
 @app.route('/regenerate-report', methods=['POST'])
 def regenerate_report():
+    """
+    Regenerates a report based on current alerts and returns it as JSON.
+
+    Returns:
+        json: JSON object containing the regenerated report.
+    """
     # Retrieve data from the current_alerts table
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()
@@ -145,6 +184,15 @@ def regenerate_report():
 
 
 def generate_analysis_charts(alerts):
+    """
+       Generates analysis charts based on the provided alerts.
+
+       Args:
+           alerts (list): A list of tuples containing alert details.
+
+       Returns:
+           list: A list of file paths to the generated charts.
+       """
     charts = []
 
     # Create DataFrame for analysis
@@ -188,6 +236,15 @@ def generate_analysis_charts(alerts):
 
 
 def generate_gemini_report(alerts):
+    """
+       Generates a report based on the provided alerts using Gemini AI.
+
+       Args:
+           alerts (list): A list of tuples containing alert details.
+
+       Returns:
+           str: The generated report in HTML format.
+       """
     # Create a report based on alerts
     report_data = []
     for alert in alerts:

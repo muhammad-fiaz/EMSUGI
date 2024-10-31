@@ -28,6 +28,16 @@ from datetime import datetime  # Import datetime
 
 
 def fetch_and_store_alerts(location, num_results=5):
+    """
+    Fetches news alerts for a given location and stores them in the database.
+
+    Args:
+        location (str): The location to search for news alerts.
+        num_results (int): The number of results to fetch. Defaults to 5.
+
+    Returns:
+        list: A list of tuples containing the fetched alert details.
+    """
     query = f"{location} news today"
     logly.info(f"Starting search for '{query}' in Bing News...")
     search_url = f"https://www.bing.com/news/search?q={query}&FORM=HDRSC7"
@@ -68,6 +78,12 @@ def fetch_and_store_alerts(location, num_results=5):
     return results  # Return fetched results
 
 def store_results_in_current_db(alerts):
+    """
+     Stores the fetched alerts in the current_alerts table in the database.
+
+     Args:
+         alerts (list): A list of tuples containing the alert details.
+     """
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()
 
@@ -87,6 +103,12 @@ def store_results_in_current_db(alerts):
 
 
 def store_results_in_db(alerts):
+    """
+      Stores the fetched alerts in the alerts history table in the database.
+
+      Args:
+          alerts (list): A list of tuples containing the alert details.
+      """
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()
 
