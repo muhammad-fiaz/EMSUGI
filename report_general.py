@@ -1,3 +1,5 @@
+# This program is for testing purposes
+
 import os
 import requests
 from bs4 import BeautifulSoup
@@ -30,6 +32,16 @@ EMERGENCY_WORDS = ['disaster', 'emergency', 'crisis', 'alert', 'warning', 'evacu
 
 # Step 1: Function to Fetch Disaster and Emergency Alerts Using Bing News Search
 def search_bing_for_alerts(query, num_results=5):
+    """
+      Fetches disaster and emergency alerts using Bing News Search.
+
+      Args:
+          query (str): The search query.
+          num_results (int): The number of results to fetch. Defaults to 5.
+
+      Returns:
+          list: A list of dictionaries containing alert details.
+      """
     logly.info(f"Starting search for '{query}' in Bing News...")
     search_url = f"https://www.bing.com/news/search?q={query}&FORM=HDRSC7"
     headers = {'User-Agent': 'Mozilla/5.0'}
@@ -69,6 +81,15 @@ def search_bing_for_alerts(query, num_results=5):
 
 # Function to fetch article content and generate tags
 def fetch_article_content_and_tags(url):
+    """
+       Fetches the content of an article and generates tags.
+
+       Args:
+           url (str): The URL of the article.
+
+       Returns:
+           tuple: A tuple containing the article content and a list of tags.
+       """
     try:
         response = requests.get(url)
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -88,6 +109,15 @@ def fetch_article_content_and_tags(url):
 
 # Function to generate a summary of the article
 def generate_summary(content):
+    """
+      Generates a summary of the article content.
+
+      Args:
+          content (str): The content of the article.
+
+      Returns:
+          str: A summary of the article.
+      """
     sentences = nltk.sent_tokenize(content)
     if sentences:
         return ' '.join(sentences[:2])  # Return the first two sentences as summary
@@ -96,6 +126,16 @@ def generate_summary(content):
 
 # Function to generate keywords based on title and content
 def generate_keywords(title, content):
+    """
+        Generates keywords based on the title and content of the article.
+
+        Args:
+            title (str): The title of the article.
+            content (str): The content of the article.
+
+        Returns:
+            list: A list of keywords.
+        """
     combined_text = title + ' ' + content
     keywords = []
 
@@ -116,6 +156,15 @@ def generate_keywords(title, content):
 
 # Function to generate tags from content
 def generate_tags(content):
+    """
+      Generates tags from the article content.
+
+      Args:
+          content (str): The content of the article.
+
+      Returns:
+          list: A list of tags.
+      """
     words = nltk.word_tokenize(content)
     filtered_words = [word for word in words if
                       word.isalnum() and word.lower() not in nltk.corpus.stopwords.words('english')]
@@ -124,6 +173,15 @@ def generate_tags(content):
 
 # Function to check if the URL already exists in the CSV
 def is_url_existing(url):
+    """
+       Checks if the URL already exists in the CSV file.
+
+       Args:
+           url (str): The URL to check.
+
+       Returns:
+           bool: True if the URL exists, False otherwise.
+       """
     if os.path.exists(CSV_FILE):
         df = pd.read_csv(CSV_FILE)
         return url in df['link'].values
@@ -132,6 +190,12 @@ def is_url_existing(url):
 
 # Function to append new articles to the CSV
 def append_to_csv(alerts):
+    """
+    Appends new articles to the CSV file if they don't already exist.
+
+    Args:
+        alerts (list): A list of dictionaries containing alert details.
+    """
     new_alerts = []
     for alert in alerts:
         if not is_url_existing(alert['link']):

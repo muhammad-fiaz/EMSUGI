@@ -1,14 +1,14 @@
 [tool.poetry]
-name = "emsug"
+name = "emsugi"
 version = "0.0.0"
-description = "a emergency management system using genai"
+description = "The EMSUGI is a sophisticated application designed to gather and analyze emergency alerts from various sources. It leverages generative AI to predict future incidents based on historical data and current trends. This system aims to enhance the efficiency of emergency responses by providing insightful reports and visual analytics."
 authors = ["Muhammad Fiaz <contact@muhammadfiaz.com>"]
-repository = "https://github.com/muhammad-fiaz/Emergency-Management-System-using-Generative-AI.git"
+repository = "https://github.com/muhammad-fiaz/EMSUGI.git"
 license = "MIT"
 readme = "README.md"
 lang = "en"
-keywords = ["emergency", "management", "system", "generative", "ai"]
-homepage = "https://github.com/muhammad-fiaz/Emergency-Management-System-using-Generative-AI#readme"
+keywords = ["emsugi", "management", "system", "generative", "ai"]
+homepage = "https://github.com/muhammad-fiaz/EMSUGI#readme"
 
 [tool.poetry.dependencies]
 python = "^3.11"

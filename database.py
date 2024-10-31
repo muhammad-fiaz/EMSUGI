@@ -2,6 +2,28 @@ import sqlite3
 
 
 def init_db():
+    """
+     Initializes the database by creating necessary tables if they do not exist.
+     This function connects to the SQLite database 'disaster_alerts.db' and creates
+     three tables: alerts, current_alerts, and gemini_reports.
+
+     Tables:
+     - alerts: Stores historical alert data.
+     - current_alerts: Stores the latest fetched alerts.
+     - gemini_reports: Stores generated reports.
+
+     Each table is created with the following columns:
+     - id: An auto-incrementing primary key.
+     - title: The title of the alert or report.
+     - link: A unique link to the alert.
+     - country: The country associated with the alert.
+     - summary: A summary of the alert.
+     - keywords: Keywords associated with the alert.
+     - tags: Tags associated with the alert.
+     - date: The timestamp when the alert or report was created.
+     - report: The generated report (only in gemini_reports table).
+     - created_at: The timestamp when the report was created (only in gemini_reports table).
+     """
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()
 
