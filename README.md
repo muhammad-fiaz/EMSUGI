@@ -51,6 +51,7 @@ Below are some screenshots showing the features and layout of the system:
    pip install -r requirements.txt
    ```
 
+
 3. Run the Flask application:
    ```bash
    python app.py
@@ -69,11 +70,12 @@ running, and managing the EMSUGI application in a Docker container.
 ```bash
 .
 ├── app.py                  # Main Flask application
-├── fetch_alerts.py            # Fetch report from online
+├── fetch_alerts.py         # Fetch report from online
 ├── templates/              # HTML templates
 ├── static/                 # Static files (CSS, JS, images)
-│   ├── styles.css
-├── database_alerts.db         # stored Database
+│   ├── styles.css          # global styles
+├── database.py             # used to create DB
+├── database_alerts.db      # stored Database
 ├── Dockerfile              # Docker configuration file
 ├── CODE_OF_CONDUCT.md      # Code of conduct for contributors
 └── README.md               # Project documentation
