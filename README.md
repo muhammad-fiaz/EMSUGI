@@ -79,7 +79,7 @@ Below are some screenshots showing the features and layout of the system:
    ```
 
 
-3. Run the Flask application:
+3. Run the Flask Web UI:
    ```bash
    python launch.py
    ```
