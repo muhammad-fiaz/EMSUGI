@@ -19,7 +19,7 @@ The **EMSUGI** is a sophisticated application designed to gather and analyze eme
 
 > This Project is Still in Active Development!
 
-### Key Features:
+## Key Features:
 - **Real-Time Alert Monitoring**: Fetches and stores emergency alerts across different countries.
 - **Generative AI**: Implements AI to analyze and generate future predictions of emergency incidents.
 - **Graphical Representation**: Displays data using charts and graphs, allowing users to visualize key metrics.
@@ -88,7 +88,7 @@ Below are some screenshots showing the features and layout of the system:
    ```
    http://127.0.0.1:5000/
    ```
-# Running with Docker
+### Running with Docker
 
 If you'd like to run this project using Docker, check out the [docker_readme.md](DOCKER_README.md) file for a step-by-step guide on building, 
 running, and managing the EMSUGI application in a Docker container.
