@@ -6,6 +6,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
 
     <title>Emergency Alerts Report</title>
     <style>
@@ -68,28 +69,30 @@
             </div>
         </div>
         {% endif %}
-
-        {% if charts %}
-        <div class="chart-container text-center mb-6">
-            <h3 class="text-3xl sm:text-4xl font-bold text-gray-100 mb-6">Analysis</h3>
-            <div class="rounded-lg overflow-hidden shadow-md w-full sm:w-2/3 lg:w-1/2 mx-auto">
-                <img src="{{ url_for('static', filename='keyword_frequency.png') }}" alt="Keyword Frequency Analysis" class="w-full h-auto rounded-lg">
+   {% if chart_data %}
+        <div class="text-center mb-6">
+            <h3 class="text-3xl font-bold text-gray-100 mb-4">Keyword Frequency Analysis</h3>
+            <div class="bg-white rounded-lg shadow-md w-full sm:w-2/3 lg:w-1/2 mx-auto p-4">
+                <canvas id="keywordChart" class="w-full"></canvas>
             </div>
         </div>
         {% endif %}
 
-        <div class="chart-container text-center mb-6">
+
+               <div class="chart-container text-center mb-6">
             <h2 class="text-3xl sm:text-4xl font-bold text-gray-100 mb-6">Reference</h2>
             <div class="rounded-lg border border-gray-300 shadow-md overflow-hidden">
                 <table class="min-w-full bg-white">
                     <thead>
                         <tr class="bg-gray-200 text-gray-700">
                             <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Title</th>
-                            <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Link</th>
+                            <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Source</th>
                             <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Country</th>
                             <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Summary</th>
                             <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Keywords</th>
                             <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Tags</th>
+                            <th class="py-2 sm:py-3 px-2    sm:px-6 border-b text-sm sm:text-lg">Date</th>
+                            <th class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">Priority</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -97,12 +100,16 @@
                         <tr class="hover:bg-gray-100">
                             <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[1] }}</td>
                             <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">
-                                <a href="{{ alert[2] }}" target="_blank" class="text-blue-600 hover:underline">Source</a>
+                                <a href="{{ alert[2] }}" target="_blank" class="text-blue-600 hover:underline">Link</a>
                             </td>
                             <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[3] }}</td>
                             <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[4] }}</td>
                             <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[5] }}</td>
                             <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[6] }}</td>
+                                                    <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[7] }}</td>
+                                                    <td class="py-2 sm:py-3 px-2 sm:px-6 border-b text-sm sm:text-lg">{{ alert[8] }}</td>
+
+
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -110,5 +117,49 @@
             </div>
         </div>
     </div>
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('keywordChart').getContext('2d');
+
+            // Data passed from backend
+            const chartData = {{ chart_data | tojson }};
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(chartData),  // X-axis: individual keywords
+                    datasets: [{
+                        label: 'Keyword Frequency',
+                        data: Object.values(chartData), // Y-axis: counts of each keyword
+                        backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            ticks: {
+                                display: true,  // Show individual keywords as labels
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Frequency'  // Only y-axis will have a title
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

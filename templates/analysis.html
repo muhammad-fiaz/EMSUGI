@@ -1,0 +1,228 @@
+<!-- This Page is Still in Development for now I filled with placeholders   -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Future Prediction Analysis</title>
+</head>
+<body class="bg-gradient-to-r from-blue-500 to-purple-600 font-sans">
+
+    <div class="absolute top-0 right-0 p-6">
+        <a href="/" class="text-lg text-white underline">Go Back</a>
+    </div>
+
+    <div class="container mx-auto p-6">
+        <h2 class="text-4xl font-bold text-white mb-6">Future Prediction Analysis</h2>
+
+        <!-- Form with options on a single row -->
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <form class="flex flex-wrap justify-between gap-4">
+
+                <!-- Location Selection -->
+                <div class="flex-1 min-w-[200px] mb-4">
+                    <label for="location" class="block mb-2 text-sm font-medium text-gray-900">Location:</label>
+                    <select id="location" name="location" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <option value="">Select a Location</option>
+                        <option value="New York">New York</option>
+                        <option value="Los Angeles">Los Angeles</option>
+                        <option value="Chicago">Chicago</option>
+                        <option value="Houston">Houston</option>
+                        <!-- Additional options can be added dynamically -->
+                    </select>
+                </div>
+
+                <!-- Keywords Selection (Single Choice, Like Location) -->
+                <div class="flex-1 min-w-[200px] mb-4">
+                    <label for="keywords" class="block mb-2 text-sm font-medium text-gray-900">Keywords:</label>
+                    <select id="keywords" name="keywords" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <option value="">Select a Keyword</option>
+                        <option value="Prediction">Prediction</option>
+                        <option value="Analytics">Analytics</option>
+                        <option value="Data">Data</option>
+                        <option value="Trends">Trends</option>
+                        <!-- Additional options can be added dynamically -->
+                    </select>
+                </div>
+
+                <!-- Tags Selection (Single Choice, Like Location) -->
+                <div class="flex-1 min-w-[200px] mb-4">
+                    <label for="tags" class="block mb-2 text-sm font-medium text-gray-900">Tags:</label>
+                    <select id="tags" name="tags" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <option value="">Select a Tag</option>
+                        <option value="Urgent">Urgent</option>
+                        <option value="Important">Important</option>
+                        <option value="High Priority">High Priority</option>
+                        <!-- Additional options can be added dynamically -->
+                    </select>
+                </div>
+
+                <!-- Duration Selection -->
+                <div class="flex-1 min-w-[200px] mb-4">
+                    <label for="duration" class="block mb-2 text-sm font-medium text-gray-900">Duration:</label>
+                    <select id="duration" name="duration" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <option value="">Select Duration</option>
+                        <option value="1">1 Week</option>
+                        <option value="2">2 Weeks</option>
+                        <option value="3">1 Month</option>
+                        <option value="4">3 Months</option>
+                        <option value="5">6 Months</option>
+                        <option value="6">1 Year</option>
+                    </select>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Timeline Series (Single Row) -->
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <h3 class="text-xl font-semibold mb-2">Prediction Timeline</h3>
+            <canvas id="timeline-chart"></canvas>
+        </div>
+
+        <!-- Chart Grid (2x2) -->
+        <div class="grid grid-cols-2 gap-6 mt-8">
+            <!-- Histogram -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-semibold mb-2">Histogram</h3>
+                <canvas id="histogram-chart"></canvas>
+            </div>
+
+            <!-- Bar Chart -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-semibold mb-2">Bar Chart</h3>
+                <canvas id="bar-chart"></canvas>
+            </div>
+
+            <!-- Pie Chart -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-semibold mb-2">Pie Chart</h3>
+                <canvas id="pie-chart"></canvas>
+            </div>
+
+            <!-- Line Chart -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-semibold mb-2">Line Chart</h3>
+                <canvas id="line-chart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Sample Data for Prediction (replace this with real data from backend)
+        const dates = ['2024-11-01', '2024-12-01', '2025-01-01', '2025-02-01'];
+        const predictions = [65, 70, 75, 80]; // For Line Chart
+        const histogramData = [10, 20, 30, 40, 50]; // For Histogram
+        const barData = [55, 60, 65, 70]; // For Bar Chart
+        const pieData = [30, 40, 30]; // For Pie Chart
+
+        // Timeline Chart
+        const timelineChartCtx = document.getElementById('timeline-chart').getContext('2d');
+        new Chart(timelineChartCtx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Prediction Timeline',
+                    data: predictions,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                }]
+            },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Date' } },
+                    y: { title: { display: true, text: 'Prediction (%)' }, beginAtZero: true, max: 100 }
+                }
+            }
+        });
+
+        // Line Chart
+        const lineChartCtx = document.getElementById('line-chart').getContext('2d');
+        new Chart(lineChartCtx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Prediction (%)',
+                    data: predictions,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                }]
+            },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Date' } },
+                    y: { title: { display: true, text: 'Likelihood (%)' }, beginAtZero: true, max: 100 }
+                }
+            }
+        });
+
+        // Histogram
+        const histogramCtx = document.getElementById('histogram-chart').getContext('2d');
+        new Chart(histogramCtx, {
+            type: 'bar',
+            data: {
+                labels: ['0-10', '11-20', '21-30', '31-40', '41-50'],
+                datasets: [{
+                    label: 'Frequency',
+                    data: histogramData,
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Range' } },
+                    y: { title: { display: true, text: 'Frequency' } }
+                }
+            }
+        });
+
+        // Bar Chart
+        const barChartCtx = document.getElementById('bar-chart').getContext('2d');
+        new Chart(barChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April'],
+                datasets: [{
+                    label: 'Likelihood (%)',
+                    data: barData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Month' } },
+                    y: { title: { display: true, text: 'Likelihood (%)' }, beginAtZero: true, max: 100 }
+                }
+            }
+        });
+
+        // Pie Chart
+        const pieChartCtx = document.getElementById('pie-chart').getContext('2d');
+        new Chart(pieChartCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Category A', 'Category B', 'Category C'],
+                datasets: [{
+                    label: 'Categories',
+                    data: pieData,
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                    borderWidth: 1
+                }]
+            }
+        });
+    </script>
+
+</body>
+</html>
