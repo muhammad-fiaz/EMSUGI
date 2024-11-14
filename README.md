@@ -81,7 +81,7 @@ Below are some screenshots showing the features and layout of the system:
 
 3. Run the Flask application:
    ```bash
-   python app.py
+   python launch.py
    ```
 
 4. Open your browser and go to:
