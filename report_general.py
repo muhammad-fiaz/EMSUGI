@@ -1,34 +1,39 @@
-# This program is for testing purposes
-
 import os
 import requests
 from bs4 import BeautifulSoup
-import google.generativeai as genai
-from dotenv import load_dotenv
 import pandas as pd
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-# Load NLTK resources
-nltk.download('punkt_tab')
-nltk.download('stopwords')
-
+import time
+import random
 from logly import logly
-
-# Load environment variables from .env file
-load_dotenv()
-
-# Get the Gemini API key from the environment variable
-gemini_api_key = os.getenv("GEMINI_API_KEY")
-genai.configure(api_key=gemini_api_key)
 
 # CSV file for storing news articles
 CSV_FILE = "disaster_alerts.csv"
 
 # Predefined emergency words for generating keywords
 EMERGENCY_WORDS = ['disaster', 'emergency', 'crisis', 'alert', 'warning', 'evacuation', 'flood', 'earthquake', 'fire',
-                   'tornado','war','attack','explosion','pandemic','outbreak','epidemic','pandemic','virus','disease','infection','quarantine'
-    ,'lockdown','curfew','storm','volcano']
+                   'tornado', 'war', 'attack', 'explosion', 'pandemic', 'outbreak', 'epidemic', 'pandemic', 'virus',
+                   'disease', 'infection', 'quarantine'
+    , 'lockdown', 'curfew', 'storm', 'volcano']
+
+
+# Function to fetch random user-agent (for anti-scraping purposes)
+def get_random_user_agent():
+    """
+      This function selects a random user-agent from a predefined list to be used in HTTP requests.
+      This is done to evade detection by websites that block or limit access based on user-agent strings.
+
+      Returns:
+          str: A randomly selected user-agent string.
+      """
+    user_agents = [
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.113 Safari/537.36'
+    ]
+    return random.choice(user_agents)
+
 
 # Step 1: Function to Fetch Disaster and Emergency Alerts Using Bing News Search
 def search_bing_for_alerts(query, num_results=5):
@@ -41,13 +46,15 @@ def search_bing_for_alerts(query, num_results=5):
 
       Returns:
           list: A list of dictionaries containing alert details.
-      """
+    """
     logly.info(f"Starting search for '{query}' in Bing News...")
     search_url = f"https://www.bing.com/news/search?q={query}&FORM=HDRSC7"
-    headers = {'User-Agent': 'Mozilla/5.0'}
+
+    # Rotate user agents to avoid detection
+    headers = {'User-Agent': get_random_user_agent()}
 
     try:
-        response = requests.get(search_url, headers=headers)
+        response = requests.get(search_url, headers=headers, timeout=10)
         response.raise_for_status()  # Raises an error for 4xx/5xx responses
 
         logly.info("Search successful. Processing results...")
@@ -58,7 +65,7 @@ def search_bing_for_alerts(query, num_results=5):
             title = li.get_text() if li else "No title"
             link = li['href'] if li else "No link"
             country = "Israel"  # Extract country name if available
-            content, tags = fetch_article_content_and_tags(link)
+            content, tags = fetch_article_content_and_tags(link)  # Calls the modified function with retries
             keywords = generate_keywords(title, content)
             summary = generate_summary(content)
 
@@ -79,19 +86,23 @@ def search_bing_for_alerts(query, num_results=5):
         return []
 
 
-# Function to fetch article content and generate tags
-def fetch_article_content_and_tags(url):
+# Function to fetch article content and generate tags with recursive retries
+def fetch_article_content_and_tags(url, retries=3):
     """
-       Fetches the content of an article and generates tags.
+       Fetches the content of an article and generates tags with automatic retries on failure.
 
        Args:
            url (str): The URL of the article.
+           retries (int): The number of retries if the request fails. Defaults to 3.
 
        Returns:
            tuple: A tuple containing the article content and a list of tags.
-       """
+    """
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers={'User-Agent': get_random_user_agent()})
+        response.raise_for_status()  # Will raise an error for 4xx/5xx responses
+
+        # Parse the article content
         soup = BeautifulSoup(response.text, 'html.parser')
 
         # Extract main content (this may vary based on the site's structure)
@@ -100,11 +111,55 @@ def fetch_article_content_and_tags(url):
 
         # Generate tags from content
         tags = generate_tags(content)
-
+        logly.info(f"Tags generated: {tags}")
         return content, tags
-    except Exception as e:
-        logly.error(f"Failed to fetch content from {url}: {e}")
-        return "", []
+
+    except requests.exceptions.RequestException as e:
+        logly.error(f"Failed to fetch content from {url}. Error: {e}")
+
+        # Check if retries are available
+        if retries > 0:
+            logly.info(f"Retrying... {retries} attempts left.")
+            time.sleep(random.uniform(1, 3))  # Small delay before retry
+            return fetch_article_content_and_tags(url, retries - 1)  # Recursive retry
+        else:
+            logly.error(f"Max retries reached. Skipping {url}.")
+            return "", []  # Return empty content and tags if retries are exhausted
+
+
+# Function to determine the priority of the alert based on the summary
+def determine_priority(summary):
+    """
+    Determines the priority level based on the summary of the alert.
+
+    Args:
+        summary (str): The summary of the alert.
+
+    Returns:
+        str: The priority level ('high', 'medium', 'low').
+    """
+    high_priority_keywords = ['emergency', 'crisis', 'evacuation', 'warning', 'attack', 'disaster', 'explosion', 'war',
+                              'fire', 'terrorist', 'danger']
+    medium_priority_keywords = ['flood', 'storm', 'earthquake', 'tornado', 'volcano', 'pandemic', 'outbreak',
+                                'epidemic', 'virus', 'disease', 'infection', 'quarantine', 'lockdown', 'curfew']
+    low_priority_keywords = ['report', 'survey', 'update', 'analysis']
+
+    summary_lower = summary.lower()
+
+    # Check for high priority
+    if any(keyword in summary_lower for keyword in high_priority_keywords):
+        logly.info("Priority: High")
+        return 'high'
+    # Check for medium priority
+    elif any(keyword in summary_lower for keyword in medium_priority_keywords):
+        logly.info("Priority: Medium")
+        return 'medium'
+    # Check for low priority
+    elif any(keyword in summary_lower for keyword in low_priority_keywords):
+        logly.info("Priority: Low")
+        return 'low'
+    logly.info("Priority: Low")
+    return 'low'  # Default to low if no match found
 
 
 # Function to generate a summary of the article
@@ -117,11 +172,13 @@ def generate_summary(content):
 
       Returns:
           str: A summary of the article.
-      """
+    """
     sentences = nltk.sent_tokenize(content)
     if sentences:
+        logly.info(f"Summary: {sentences[:2]}")
         return ' '.join(sentences[:2])  # Return the first two sentences as summary
-    return ""
+    logly.info("Summary: No content")
+    return "Summary not available"
 
 
 # Function to generate keywords based on title and content
@@ -135,7 +192,7 @@ def generate_keywords(title, content):
 
         Returns:
             list: A list of keywords.
-        """
+    """
     combined_text = title + ' ' + content
     keywords = []
 
@@ -151,6 +208,7 @@ def generate_keywords(title, content):
 
     # Combine predefined keywords with TF-IDF keywords
     keywords.extend([name for name in feature_names if name not in keywords])
+    logly.info(f"Keywords generated: {keywords}")
     return list(set(keywords))  # Return unique keywords
 
 
@@ -164,83 +222,9 @@ def generate_tags(content):
 
       Returns:
           list: A list of tags.
-      """
+    """
     words = nltk.word_tokenize(content)
     filtered_words = [word for word in words if
                       word.isalnum() and word.lower() not in nltk.corpus.stopwords.words('english')]
+    logly.info(f"Tags generated: {filtered_words[:5]}")
     return list(set(filtered_words))[:5]  # Return up to 5 unique tags
-
-
-# Function to check if the URL already exists in the CSV
-def is_url_existing(url):
-    """
-       Checks if the URL already exists in the CSV file.
-
-       Args:
-           url (str): The URL to check.
-
-       Returns:
-           bool: True if the URL exists, False otherwise.
-       """
-    if os.path.exists(CSV_FILE):
-        df = pd.read_csv(CSV_FILE)
-        return url in df['link'].values
-    return False
-
-
-# Function to append new articles to the CSV
-def append_to_csv(alerts):
-    """
-    Appends new articles to the CSV file if they don't already exist.
-
-    Args:
-        alerts (list): A list of dictionaries containing alert details.
-    """
-    new_alerts = []
-    for alert in alerts:
-        if not is_url_existing(alert['link']):
-            new_alerts.append(alert)
-
-    if new_alerts:
-        df = pd.DataFrame(new_alerts)
-        if os.path.exists(CSV_FILE):
-            df.to_csv(CSV_FILE, mode='a', header=False, index=False)
-        else:
-            df.to_csv(CSV_FILE, index=False)
-
-
-# Main function to execute the emergency management system
-def main():
-    location = "israel"
-    query = location + " news today"
-    num_results = 25  # Number of results to fetch
-
-    # Search for emergency alerts using Bing News
-    alerts = search_bing_for_alerts(query, num_results)
-
-    # Append new articles to CSV if they don't already exist
-    append_to_csv(alerts)
-
-    # Generate a summary report using Gemini API
-    if alerts:
-        summary_report = generate_summary_report(alerts)
-        print("Summary Report:\n")
-        print(summary_report)
-    else:
-        print("No alerts found.")
-
-
-# Function to generate a summary report using Gemini API
-def generate_summary_report(alerts):
-    report_text = "\n".join([
-                                f"{alert['title']}: {alert['link']}\nCountry: {alert['country']}\nSummary: {alert['summary']}\nKeywords: {', '.join(alert['keywords'])}\nTags: {', '.join(alert['tags'])}\n"
-                                for alert in alerts])
-    prompt = f"Generate a news summary report and precaution for peoples for the following emergency alerts:\n\n{report_text}"
-    model = genai.GenerativeModel(model_name='gemini-1.5-flash')
-
-    response = model.generate_content(prompt)
-    return response.text
-
-
-if __name__ == "__main__":
-    main()

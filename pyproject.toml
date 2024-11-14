@@ -6,7 +6,6 @@ authors = ["Muhammad Fiaz <contact@muhammadfiaz.com>"]
 repository = "https://github.com/muhammad-fiaz/EMSUGI.git"
 license = "MIT"
 readme = "README.md"
-lang = "en"
 keywords = ["emsugi", "management", "system", "generative", "ai"]
 homepage = "https://github.com/muhammad-fiaz/EMSUGI#readme"
 
@@ -16,18 +15,26 @@ google-generativeai = "^0.8.1"
 python-dotenv = "^1.0.1"
 requests = "^2.32.3"
 scikit-learn = "^1.0.2"
-torch = "^1.10.0"
-torchvision = "^0.11.1"
+torch = {url = "https://download.pytorch.org/whl/cu124/torch-2.5.1%2Bcu124-cp312-cp312-win_amd64.whl"}
+torchaudio = {url = "https://download.pytorch.org/whl/cu124/torchaudio-2.5.1%2Bcu124-cp312-cp312-win_amd64.whl"}
+torchvision = {url = "https://download.pytorch.org/whl/cu124/torchvision-0.20.1%2Bcu124-cp312-cp312-win_amd64.whl"}
 nltk = "^3.6.5"
 transformers = "^4.45.1"
 bs4 = "^0.0.2"
 logly = "^0.0.6"
-sentence-transformers = "^3.1.1"
+sentence-transformers = "^3.1.0"
 matplotlib = "^3.4.3"
-tensorflow = "^2.7.0"
+tensorflow = "^2.18.0"
+pandas = "^2.2.3"
+flask = "^3.0.3"
+accelerate = "^1.1.1"
+bitsandbytes = "^0.44.1"
 
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+package-mode = false
+

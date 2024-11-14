@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
         <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
-    <title>Emergency Alerts Management Systems</title>
+    <title>EMSUGI</title>
     <script>
         tailwind.config = {
             theme: {
@@ -123,23 +123,45 @@
 <body class="bg-pattern text-gray-900 flex items-center justify-center min-h-screen">
 <div class="absolute top-0 right-0 p-6">
     <a href="/history" class="text-lg text-white underline mr-4">History</a>
-    <a href="/reports" class="text-lg text-white underline">Reports</a>
+    <a href="/reports" class="text-lg text-white underline mr-4">Reports</a>
+        <a href="/analysis" class="text-lg text-white underline">Analysis</a>
+
+</div>
+<div class="container mx-auto p-6 flex flex-col items-center content">
+        <h1 class="text-4xl font-bold text-center text-gray-100 mb-6">Generate Your Prediction Report!</h1>
+        <div class="form-container mb-4 w-full flex justify-center">
+            <!-- Card Container for Form -->
+           <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-8xl">
+    <form id="alertForm" action="/loading" method="POST" class="flex gap-6"> <!-- Increased gap here -->
+     <!-- Topic Input -->
+      <div class="relative w-1/2 pr-4">
+            <input type="text" id="topic" name="topic" required
+                   class="w-full p-4 pr-12 pl-8 rounded-full focus:outline-none focus:border-gray-300 focus:ring-2 focus:ring-gray-300 focus:pl-7"
+                   placeholder="Search the topic here!">
+            <span class="absolute inset-y-0 left-2 flex items-center text-gray-500">
+                <i class="fas fa-search"></i> <!-- Search Icon -->
+            </span>
+        </div>
+<div class="border-l-2 border-gray-200"></div>
+<!-- Location Input -->
+<div class="relative w-1/2">
+    <input type="text" id="location" name="location" required
+                   class="w-full p-4 pr-12 pl-8 rounded-full focus:outline-none focus:border-gray-300 focus:ring-2 focus:ring-gray-300 focus:pl-7"
+           placeholder="City, State, or Country/Region">
+    <span class="absolute inset-y-0 left-3 flex items-center text-gray-500">
+        <i class="fa-solid fa-location-dot"></i>
+    </span>
 </div>
 
-    <div class="container mx-auto p-6 flex flex-col items-center content">
-        <h1 class="text-4xl font-bold text-center text-gray-100 mb-6">Generate Your Report!</h1>
-        <div class="form-container mb-4 w-full">
-            <form id="alertForm" action="/loading" method="POST" class="flex flex-col items-center">
-                <label for="location" class="sr-only">Location</label>
-                <div class="relative w-full mb-4">
-                    <input type="text" id="location" name="location" required
-                           class="w-full p-6 pr-12 border border-gray-300 rounded-full focus:outline-none mx-4"
-                           placeholder="Search">
-                    <span class="absolute inset-y-0 right-3 flex items-center text-gray-500 cursor-pointer" id="location-icon">
-                        <i class="fas fa-location-arrow"></i> <!-- Clickable icon -->
-                    </span>
-                </div>
-            </form>
+
+    <!-- Submit Button -->
+<button type="submit" class="w-full sm:w-auto p-4 text-purple-600 rounded-full focus:outline-none hover:text-purple-700 flex items-center justify-center">
+    <i class="fas fa-location-arrow text-xl"></i>
+</button>
+
+    </form>
+</div>
+
         </div>
     </div>
 
@@ -151,11 +173,10 @@
         </div>
     </div>
 
-    <script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
         const form = document.getElementById('alertForm');
         const loading = document.getElementById('loading');
-        const locationIcon = document.getElementById('location-icon');
-        const locationInput = document.getElementById('location');
 
         // Initialize Lottie animation
         const animation = lottie.loadAnimation({
@@ -166,28 +187,14 @@
             path: 'https://lottie.host/00db5f22-8176-422c-91e2-360867e775a2/o2rLveFQvV.json' // URL of the Lottie animation
         });
 
-        // Add click event to the location icon
-        locationIcon.addEventListener('click', function(event) {
-            event.preventDefault();
+        // Submit form with loading animation
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
             loading.style.display = 'flex'; // Show loading popup
-            disableIcon(); // Disable the icon
 
-            submitForm();
-        });
-
-        // Add keydown event to the input field for Enter key
-        locationInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Prevent default form submission
-                loading.style.display = 'flex'; // Show loading popup
-                disableIcon(); // Disable the icon
-
-                submitForm();
-            }
-        });
-
-        function submitForm() {
             const formData = new FormData(form);
+
+            // Submit the form data with fetch
             fetch('/loading', {
                 method: 'POST',
                 body: formData
@@ -196,26 +203,17 @@
             .then(data => {
                 if (data.status === 'completed') {
                     window.location.href = '/report'; // Redirect to report page
+                } else {
+                    throw new Error('Report generation incomplete');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 loading.style.display = 'none'; // Hide loading animation on error
-                enableIcon(); // Re-enable icon if there's an error
             });
-        }
+        });
+    });
+</script>
 
-        function disableIcon() {
-            locationIcon.classList.add('text-gray-400'); // Change icon color to indicate disabled state
-            locationIcon.classList.remove('text-gray-500');
-            locationIcon.style.pointerEvents = 'none'; // Disable click on icon
-        }
-
-        function enableIcon() {
-            locationIcon.classList.remove('text-gray-400'); // Reset icon color
-            locationIcon.classList.add('text-gray-500');
-            locationIcon.style.pointerEvents = 'auto'; // Re-enable click on icon
-        }
-    </script>
 </body>
 </html>

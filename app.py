@@ -19,34 +19,38 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+import base64
+import io
 import os
+
+import numpy as np
 import requests
 from bs4 import BeautifulSoup
-import google.generativeai as genai
-from dotenv import load_dotenv
 import nltk
 import sqlite3
 import matplotlib.pyplot as plt
 import pandas as pd
 import markdown  # Import the markdown library
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session, flash
+from logly import logly
+
 from fetch_alerts import fetch_and_store_alerts
 from database import init_db
-from datetime import datetime
+from datetime import datetime, timedelta
+
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
+from generate import  Generate
 
 # Load NLTK resources
 nltk.download('punkt')
 nltk.download('stopwords')
 
-# Load environment variables from .env file
-load_dotenv()
-gemini_api_key = os.getenv("GEMINI_API_KEY")
-genai.configure(api_key=gemini_api_key)
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")  # Make sure to set this in your .env file
-
+API_ENABLED = os.getenv("API_ENABLED", "False").lower() == "true"
+DEBUG=os.getenv("DEBUG", "False").lower() == "true"
 
 @app.route('/', methods=['GET'])
 def index():
@@ -77,7 +81,7 @@ def reports():
     gemini_reports = c.fetchall()
 
     conn.close()
-
+    logly.info(f"Retrieved Gemini reports")
     # Render the reports template with the fetched data
     return render_template('reports.html', gemini_reports=gemini_reports)
 
@@ -88,18 +92,21 @@ def loading():
 
      Args:
          location (str): The location to search for news alerts.
+         topic (str): The topic to search for news alerts.
 
      Returns:
          json: JSON object indicating that processing is complete.
      """
-    location = request.form['location']
-
+    location = request.form.get('location')
+    topic = request.form.get('topic')
+    logly.info(f"Received location: {location}")
+    logly.info(f"Received topic: {topic}")
     # Fetch alerts and process data
-    fetch_and_store_alerts(location, num_results=25)
+    fetch_and_store_alerts(location,topic, num_results=25)
 
     # Set session variable to allow access to the report page
     session['can_access_report'] = True
-
+    logly.info("fetching alerts and processing data")
     # Respond with a JSON object indicating that processing is complete
     return jsonify({'status': 'completed'})
 
@@ -121,43 +128,38 @@ def history():
     history_data = c.fetchall()
 
     conn.close()
-
+    logly.info(f"Retrieved history data")
     # Render the history template with the fetched data
     return render_template('history.html', history=history_data)
 
 
 @app.route('/report', methods=['GET'])
 def report():
-    """
-      Generates and renders a report based on current alerts.
-
-      Returns:
-          str: Rendered HTML template for the report page with generated charts and report.
-      """
-    # Check if the user is allowed to access this page
+    # Check access permissions
     if not session.get('can_access_report'):
         flash("You need to perform a search first.")
-        return redirect(url_for('index'))  # Redirect to the main page if not allowed
+        return redirect(url_for('index'))
 
-    # Retrieve data from the current_alerts table
+    # Retrieve data from the database
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()
+    # First query: Get data ordered by 'id' DESC
     c.execute("SELECT * FROM current_alerts ORDER BY id DESC")
-    current_alerts = c.fetchall()
+    current_alerts= c.fetchall()
+
+    # Second query: Get data ordered by 'keywords' ASC
+    c.execute("SELECT keywords FROM current_alerts ORDER BY keywords ASC")
+    current_alerts_by_keywords = c.fetchall()
     conn.close()
 
-    # Generate charts and report based on current alerts
-    charts = generate_analysis_charts(current_alerts)
-    if not charts:
-        return "No data available to generate charts."
-
+    # Generate analysis data for charts
+    chart_data = generate_analysis_charts(current_alerts_by_keywords)
+    logly.warn(f"Generated analysis data for charts"+str(chart_data))
     gemini_report = generate_gemini_report(current_alerts)
 
-    # Clear the session variable after rendering the report
+    # Clear session variable after rendering the report
     session.pop('can_access_report', None)
-
-    # Render the report page
-    return render_template('report.html', alerts=current_alerts, charts=charts, gemini_report=gemini_report)
+    return render_template('report.html', alerts=current_alerts, chart_data=chart_data, gemini_report=gemini_report)
 
 
 @app.route('/regenerate-report', methods=['POST'])
@@ -179,60 +181,44 @@ def regenerate_report():
     gemini_report = generate_gemini_report(current_alerts)
 
     # Return the new report as JSON
+    logly.info(f"Regenerated report")
     return jsonify({'report': gemini_report})
 
 
-
-def generate_analysis_charts(alerts):
+def generate_analysis_charts(alerts_by_keywords):
     """
-       Generates analysis charts based on the provided alerts.
+    Generates analysis data based on the provided alerts ordered by keywords for rendering charts on the front end.
 
-       Args:
-           alerts (list): A list of tuples containing alert details.
+    Args:
+        alerts_by_keywords (list): A list of tuples containing alert details ordered by 'keywords'.
 
-       Returns:
-           list: A list of file paths to the generated charts.
-       """
-    charts = []
+    Returns:
+        dict: JSON-compatible dictionary with keyword frequencies.
+    """
+    # Dictionary to store keyword frequencies for alerts ordered by keywords
+    keyword_counts_by_keywords = {}
 
-    # Create DataFrame for analysis
-    keywords_list = []
-    dates_list = []
-    countries_list = []
+    logly.warn(f"Generating analysis data for charts for alerts ordered by keywords...")
 
-    for alert in alerts:
-        # Split the keywords (assuming they are comma-separated)
-        keywords = alert[4].split(', ')  # Assuming keywords are in the 5th column
-        # Append each keyword to the keywords_list
-        keywords_list.extend(keywords)
-        # Append the current date to the dates_list for each keyword
+    # Loop through each alert to split and count keywords
+    for alert in alerts_by_keywords:
+        logly.warn(f"Generating analysis data for alerts ordered by keywords..."+str(alert))
+        # Splitting by ',' and removing leading/trailing spaces for each keyword
+        keywords = [keyword.strip() for keyword in alert[0].split(',')]
+        logly.warn(f"Generating analysis data for alerts ordered by keywords..."+str(keywords))
+        # Count the frequency of each keyword
         for keyword in keywords:
-            dates_list.append(datetime.now())  # Use current datetime for demo purposes
-            countries_list.append(alert[3])  # Assuming country is in the 3rd column
+            # ignore numbers only without any words in keywords
+            if keyword and not keyword.isdigit():
+                keyword_counts_by_keywords[keyword] = keyword_counts_by_keywords.get(keyword, 0) + 1
 
-    # Ensure the lengths of lists are consistent before creating the DataFrame
-    if len(keywords_list) != len(dates_list) or len(keywords_list) != len(countries_list):
-        raise ValueError("The lengths of keywords, dates, and countries lists are not the same.")
+    # Log the generated keyword counts for verification
+    logly.warn(f"Generated keyword counts for alerts ordered by keywords: {keyword_counts_by_keywords}")
 
-    df = pd.DataFrame({
-        'keywords': keywords_list,
-        'dates': dates_list,
-        'countries': countries_list
-    })
+    # Return the keyword frequency data for alerts ordered by keywords
+    return keyword_counts_by_keywords
 
-    # Generate Keyword Frequency Histogram
-    keyword_counts = df['keywords'].value_counts()
-    plt.figure(figsize=(10, 6))
-    keyword_counts.plot(kind='bar', color='blue')
-    plt.title('Keyword Frequency Analysis')
-    plt.xlabel('Keywords')
-    plt.ylabel('Frequency')
-    histogram_file = 'static/keyword_frequency.png'
-    plt.savefig(histogram_file)
-    plt.close()
-    charts.append(histogram_file)
 
-    return charts
 
 
 def generate_gemini_report(alerts):
@@ -254,14 +240,9 @@ def generate_gemini_report(alerts):
             'link': alert[2],  # Assuming link is in the 3rd column
         })
 
-    # Generate report text using Gemini AI
-    report_text = genai.GenerativeModel(model_name='gemini-1.5-flash')
-    report_text = report_text.generate_content(
-        f"you are now a Reporter you will help people to report the emergency time about current scenario, so Generate an emergency and disaster and war times summary report and precaution for people for the following emergency alerts:\n\n{report_data}")
-
-
+    report_sentences = Generate(report_data, api=API_ENABLED).generate_report()
     # Convert the Markdown response to HTML
-    report_html = markdown.markdown(report_text.text)
+    report_html = markdown.markdown(report_sentences)
 
     # Store the generated report in the database with the current timestamp
     conn = sqlite3.connect('disaster_alerts.db')
@@ -269,12 +250,28 @@ def generate_gemini_report(alerts):
     c.execute("INSERT INTO gemini_reports (report, created_at) VALUES (?, ?)", (report_html, datetime.now()))
     conn.commit()
     conn.close()
-
+    logly.info(f"Generated Gemini report")
     return report_html
 
 
+# Route to render the analysis page (GET request)
+@app.route('/analysis', methods=['GET', 'POST'])
+def analysis():
+    if request.method == 'POST':
+        # Here we will handle the form submission (e.g., generating analysis chart)
+        location = request.form.get('location')
+        keywords = request.form.getlist('keywords')  # get multiple selected values
+        tags = request.form.getlist('tags')
+
+        # You can process the form data here and return a response if needed
+        # Example: Store filters in session or handle backend processing for predictions
+        # For now, we'll just send back an empty response for demonstration
+        logly.info(f"Received form data: {location}, {keywords}, {tags}")
+        return render_template('analysis.html', location=location, keywords=keywords, tags=tags)
+
+    logly.info("Rendering analysis page")
+    # Default GET request renders the form page
+    return render_template('analysis.html')
 
 
-if __name__ == '__main__':
-    init_db()  # Initialize the database
-    app.run(debug=True)
+
