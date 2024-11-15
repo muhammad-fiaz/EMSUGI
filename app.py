@@ -110,27 +110,94 @@ def loading():
     # Respond with a JSON object indicating that processing is complete
     return jsonify({'status': 'completed'})
 
+@app.route('/analysis-data', methods=['GET'])
+def fetch_analysis_data():
+    """
+    Fetches distinct values for locations, tags, priorities, and keywords from the database,
+    along with future prediction durations and additional timeframes for past data.
 
-@app.route('/history', methods=['GET'])
+    Returns:
+        json: A dictionary with lists of locations, tags, priorities, keywords, prediction durations, and past date ranges.
+    """
+    # Connect to the database
+    conn = sqlite3.connect('disaster_alerts.db')
+    c = conn.cursor()
+
+    # Fetch distinct locations
+    c.execute("SELECT DISTINCT country FROM alerts")
+    locations = [row[0] for row in c.fetchall()]
+
+    # Fetch and process distinct tags
+    c.execute("SELECT DISTINCT tags FROM alerts")
+    raw_tags = [row[0] for row in c.fetchall()]
+    distinct_tags = set()
+    for tag_list in raw_tags:
+        if tag_list:
+            distinct_tags.update([tag.strip() for tag in tag_list.split(',') if not tag.strip().isdigit()])
+
+    # Fetch and process distinct keywords
+    c.execute("SELECT DISTINCT keywords FROM alerts")
+    raw_keywords = [row[0] for row in c.fetchall()]
+    distinct_keywords = set()
+    for keyword_list in raw_keywords:
+        if keyword_list:
+            distinct_keywords.update(
+                [keyword.strip() for keyword in keyword_list.split(',') if not keyword.strip().isdigit()])
+    # Fetch distinct priorities
+    c.execute("SELECT DISTINCT priority FROM alerts")
+    priorities = [row[0] for row in c.fetchall()]
+
+    conn.close()
+
+    # Define prediction durations (future intervals)
+    prediction_durations = {
+        "durations": [
+            {"label": "1 Week", "value": 7},  # 7 days
+            {"label": "2 Weeks", "value": 14},  # 14 days
+            {"label": "1 Month", "value": 30},  # 30 days
+            {"label": "3 Months", "value": 90}  # 90 days
+        ]
+    }
+
+    # Define past date ranges
+    past_date_ranges = [
+        {"label": "Last Year to This Month", "value": "last_year_to_this_month"},
+        {"label": "Last Week", "value": "last_week"},
+        {"label": "Last 7 Days", "value": "last_7_days"}
+    ]
+
+    # Return data as JSON
+    return jsonify({
+        'locations': locations,
+        'tags': sorted(distinct_tags),
+        'priorities': priorities,
+        'keywords': sorted(distinct_keywords),
+        'prediction_durations': prediction_durations,
+        'past_date_ranges': past_date_ranges
+    })
+
+
+
+@app.route('/records', methods=['GET'])
 def history():
     """
-      Retrieves all historical alert data from the database and renders the history page.
+      Retrieves all historical alert data from the database and renders the records page.
 
       Returns:
-          str: Rendered HTML template for the history page with fetched data.
+          str: Rendered HTML template for the records page with fetched data.
       """
     # Connect to the database
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()
 
-    # Retrieve all history data in descending order (most recent first)
+    # Retrieve all records data in descending order (most recent first)
     c.execute("SELECT * FROM alerts ORDER BY id DESC")
-    history_data = c.fetchall()
+    records_data = c.fetchall()
 
     conn.close()
-    logly.info(f"Retrieved history data")
-    # Render the history template with the fetched data
-    return render_template('history.html', history=history_data)
+    logly.info(f"Retrieved records data")
+    # Render the records template with the fetched data
+    return render_template('records.html', records=records_data)
 
 
 @app.route('/report', methods=['GET'])
@@ -275,3 +342,22 @@ def analysis():
 
 
 
+@app.route('/license', methods=['GET'])
+def license():
+    """
+    Renders the License page.
+
+    Returns:
+        str: Rendered HTML template for the License page.
+    """
+    return render_template('license.html')
+
+@app.route('/notice', methods=['GET'])
+def notice():
+    """
+    Renders the Notice page.
+
+    Returns:
+        str: Rendered HTML template for the Notice page.
+    """
+    return render_template('notice.html')

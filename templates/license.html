@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
+
+    <title>MIT License</title>
+    <style>
+        /* Custom background pattern with animation */
+        @keyframes gradient-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .bg-pattern {
+            background: linear-gradient(135deg, #3b82f6, #9333ea);
+            background-size: 400% 400%; /* Larger for smooth gradient animation */
+            animation: gradient-animation 10s ease infinite; /* Smooth background animation */
+        }
+
+        .rounded-shadow {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for containers */
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .content-spacing {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+
+<body class="bg-pattern text-gray-900 font-sans min-h-screen flex flex-col">
+
+    <div class="absolute top-0 right-0 p-6">
+        <a href="/" class="text-lg text-white underline">Go Back</a>
+    </div>
+
+    <!-- Main content section -->
+    <div class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h1 class="text-4xl font-bold text-center text-gray-100 mb-6">MIT License</h1>
+
+        <div class="bg-white p-6 rounded-lg shadow-lg text-gray-800 rounded-shadow mb-8">
+            <h2 class="text-2xl font-semibold mb-4">MIT License</h2>
+            <p class="text-lg">
+                Copyright (c) 2024 Muhammad Fiaz
+            </p>
+            <p class="text-lg mb-4">
+                Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+            </p>
+            <p class="text-lg mb-4">
+                The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+            </p>
+            <p class="text-lg">
+                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+<div class="footer fixed bottom-0 left-0 right-0  text-center py-4">
+    <div class="flex justify-center gap-6 mb-2">
+        <!-- Notice link -->
+        <a href="/notice" class="text-white hover:text-gray-400">
+            <i class="fas fa-file-alt"></i> Notice
+        </a>
+
+        <!-- License link -->
+        <a href="/license" class="text-white hover:text-gray-400">
+            <i class="fas fa-gavel"></i> License
+        </a>
+
+        <!-- GitHub link -->
+        <a href="https://github.com/muhammad-fiaz/EMSUGI" class="text-white hover:text-gray-400" target="_blank">
+      <i class="fa-brands fa-github"></i> GitHub
+        </a>
+    </div>
+    <p class="text-white">&copy; 2024 Muhammad Fiaz. All Rights Reserved.</p>
+</div>
+
+</body>
+
+</html>

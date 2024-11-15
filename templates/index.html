@@ -6,7 +6,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
     <title>EMSUGI</title>
     <script>
@@ -112,108 +112,263 @@
             z-index: 10;
         }
 
-        /* Custom styles for the input field */
-        input:focus {
-            outline: none; /* Remove default outline */
-            box-shadow: none; /* Remove blue focus ring */
-            border-color: inherit; /* Maintain the same border color */
+    /* Smooth transition for focus */
+    input:focus {
+        outline: none;
+        box-shadow: 0 0 10px rgba(99, 102, 241, 0.5); /* Focus effect with a softer shadow */
+        transition: box-shadow 0.4s ease-out; /* Smooth transition */
+    }
+ /* Styling for the navigation bar with transition effects */
+        .nav-bar {
+            background-color: rgb(255, 255, 255);
+            border-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
+        .nav-bar a {
+            color: #4a5568;
+            padding: 8px 16px;
+            margin: 0 12px;
+            text-decoration: none;
+            font-size: 16px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .nav-bar a:hover {
+            color: #000000;
+            transform: scale(1.1);
+        }
+
+        .nav-bar a:focus {
+            outline: none;
+            color: #000000;
+        }
+
+        .nav-bar:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* Styling for the rounded edges */
+        .nav-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+
+
+        /* Custom transition for button */
+        button {
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #9333ea;
+            color: white;
+            transform: scale(1.05);
+        }
+
+
+   /* Footer hover effects */
+    .footer a {
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    .footer a:hover {
+        color: #ffffff;
+        transform: scale(1.1); /* Slightly scale the link on hover */
+    }
+
+    /* Smooth fade-in for the footer */
+    .footer {
+        animation: fadeIn 1s ease-out;
+    }
+
+    /* Transition effect for the footer text */
+    .footer p {
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .footer p:hover {
+        color: #ffffff; /* Change text color on hover */
+        transform: scale(1.05); /* Slightly scale the text on hover */
+    }
+
+    /* Hover effect for footer icons */
+    .footer i {
+        transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .footer i:hover {
+        color: #ffffff;
+        transform: scale(1.1); /* Scale the icons on hover */
+    }
+        #loading {
+            animation: fadeIn 1s ease-out;
+        }
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+    .font-stylish {
+        font-family: 'Pacifico', cursive;
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(-20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+        display: inline-block;
+        animation: fadeIn 1s ease-in-out;
+        color: white;
+    }
+
+    .fade-in:nth-child(1) { animation-delay: 0s; }
+    .fade-in:nth-child(2) { animation-delay: 0.2s; }
+    .fade-in:nth-child(3) { animation-delay: 0.4s; }
+    .fade-in:nth-child(4) { animation-delay: 0.6s; }
+    .fade-in:nth-child(5) { animation-delay: 0.8s; }
+    .fade-in:nth-child(6) { animation-delay: 1s; }
     </style>
 </head>
 <body class="bg-pattern text-gray-900 flex items-center justify-center min-h-screen">
-<div class="absolute top-0 right-0 p-6">
-    <a href="/history" class="text-lg text-white underline mr-4">History</a>
-    <a href="/reports" class="text-lg text-white underline mr-4">Reports</a>
-        <a href="/analysis" class="text-lg text-white underline">Analysis</a>
-
-</div>
-<div class="container mx-auto p-6 flex flex-col items-center content">
-        <h1 class="text-4xl font-bold text-center text-gray-100 mb-6">Generate Your Prediction Report!</h1>
-        <div class="form-container mb-4 w-full flex justify-center">
-            <!-- Card Container for Form -->
-           <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-8xl">
-    <form id="alertForm" action="/loading" method="POST" class="flex gap-6"> <!-- Increased gap here -->
-     <!-- Topic Input -->
-      <div class="relative w-1/2 pr-4">
-            <input type="text" id="topic" name="topic" required
-                   class="w-full p-4 pr-12 pl-8 rounded-full focus:outline-none focus:border-gray-300 focus:ring-2 focus:ring-gray-300 focus:pl-7"
-                   placeholder="Search the topic here!">
-            <span class="absolute inset-y-0 left-2 flex items-center text-gray-500">
-                <i class="fas fa-search"></i> <!-- Search Icon -->
-            </span>
-        </div>
-<div class="border-l-2 border-gray-200"></div>
-<!-- Location Input -->
-<div class="relative w-1/2">
-    <input type="text" id="location" name="location" required
-                   class="w-full p-4 pr-12 pl-8 rounded-full focus:outline-none focus:border-gray-300 focus:ring-2 focus:ring-gray-300 focus:pl-7"
-           placeholder="City, State, or Country/Region">
-    <span class="absolute inset-y-0 left-3 flex items-center text-gray-500">
-        <i class="fa-solid fa-location-dot"></i>
-    </span>
-</div>
-
-
-    <!-- Submit Button -->
-<button type="submit" class="w-full sm:w-auto p-4 text-purple-600 rounded-full focus:outline-none hover:text-purple-700 flex items-center justify-center">
-    <i class="fas fa-location-arrow text-xl"></i>
-</button>
-
-    </form>
-</div>
-
+   <div class="nav-container">
+        <div class="nav-bar">
+            <a href="/records" class="text-lg">Records</a>
+            <a href="/reports" class="text-lg">Reports</a>
+            <a href="/analysis" class="text-lg">Analysis</a>
         </div>
     </div>
+<div class="absolute top-[25%] left-1/2 transform -translate-x-1/2 ">
+<h2 class="text-7xl font-extrabold text-center text-white mb-6 font-stylish">
+    <span class="fade-in">E</span>
+    <span class="fade-in">M</span>
+    <span class="fade-in">S</span>
+    <span class="fade-in">U</span>
+    <span class="fade-in">G</span>
+    <span class="fade-in">I</span>
+</h2>
 
+</div>
+    <div class="container mx-auto p-6 flex flex-col items-center content">
+
+        <h3 class="text-2xl font-bold text-center text-gray-100 mb-2">Generate Your Prediction Report!</h3>
+        <div class="form-container mb-4 w-full flex justify-center">
+            <!-- Card Container for Form -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-8xl">
+                <form id="alertForm" action="/loading" method="POST" class="flex gap-6"> <!-- Increased gap here -->
+                    <!-- Topic Input -->
+                    <div class="relative w-1/2 pr-4">
+                        <input type="text" id="topic" name="topic" required
+                               class="w-full p-4 pr-12 pl-8 rounded-full focus:outline-none focus:border-gray-300 focus:ring-2 focus:ring-gray-300 focus:pl-7"
+                               placeholder="Search the topic here!">
+                        <span class="absolute inset-y-0 left-2 flex items-center text-gray-500">
+                            <i class="fas fa-search"></i> <!-- Search Icon -->
+                        </span>
+                    </div>
+                    <div class="border-l-2 border-gray-200"></div>
+                    <!-- Location Input -->
+                    <div class="relative w-1/2">
+                        <input type="text" id="location" name="location" required
+                               class="w-full p-4 pr-12 pl-8 rounded-full focus:outline-none focus:border-gray-300 focus:ring-2 focus:ring-gray-300 focus:pl-7"
+                               placeholder="City, State, or Country/Region">
+                        <span class="absolute inset-y-0 left-3 flex items-center text-gray-500">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full sm:w-auto p-4 text-purple-600 rounded-full focus:outline-none hover:text-purple-700 flex items-center justify-center">
+                        <i class="fas fa-location-arrow text-xl"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Version Text and Tag -->
+<div class="fixed bottom-0 right-0 p-4">
+    <span class="text-white px-3 py-1 underline">Version 1.0.0</span>
+</div>
     <!-- Loading Popup -->
     <div id="loading" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50" style="display: none;">
         <div class="text-center bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
-            <div id="lottie-animation" class="w-64 h-64 mb-4"></div> <!-- Increased size -->
+            <div id="lottie-animation" class="w-64 h-64 mb-4"></div>
             <h2 class="text-2xl text-gray-600">Please wait while we are generating...</h2>
         </div>
     </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const form = document.getElementById('alertForm');
-        const loading = document.getElementById('loading');
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById('alertForm');
+            const loading = document.getElementById('loading');
 
-        // Initialize Lottie animation
-        const animation = lottie.loadAnimation({
-            container: document.getElementById('lottie-animation'), // the DOM element that will contain the animation
-            renderer: 'svg',
-            loop: true,
-            autoplay: true,
-            path: 'https://lottie.host/00db5f22-8176-422c-91e2-360867e775a2/o2rLveFQvV.json' // URL of the Lottie animation
-        });
 
-        // Submit form with loading animation
-        form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
-            loading.style.display = 'flex'; // Show loading popup
+            // Initialize Lottie animation
+            const animation = lottie.loadAnimation({
+                container: document.getElementById('lottie-animation'), // the DOM element that will contain the animation
+                renderer: 'svg',
+                loop: true,
+                autoplay: true,
+                path: 'https://lottie.host/00db5f22-8176-422c-91e2-360867e775a2/o2rLveFQvV.json' // URL of the Lottie animation
+            });
 
-            const formData = new FormData(form);
+            // Submit form with loading animation
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent default form submission
+                loading.style.display = 'flex'; // Show loading popup
 
-            // Submit the form data with fetch
-            fetch('/loading', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'completed') {
-                    window.location.href = '/report'; // Redirect to report page
-                } else {
-                    throw new Error('Report generation incomplete');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                loading.style.display = 'none'; // Hide loading animation on error
+                const formData = new FormData(form);
+
+                // Submit the form data with fetch
+                fetch('/loading', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'completed') {
+                        window.location.href = '/report'; // Redirect to report page
+                    } else {
+                        throw new Error('Report generation incomplete');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loading.style.display = 'none'; // Hide loading animation on error
+                });
             });
         });
-    });
-</script>
+    </script>
+
+    <div class="footer fixed bottom-0 left-0 right-0  text-center py-4">
+        <div class="flex justify-center gap-6 mb-2">
+            <!-- Notice link -->
+            <a href="/notice" class="text-white hover:text-gray-400">
+                <i class="fas fa-file-alt"></i> Notice
+            </a>
+
+            <!-- License link -->
+            <a href="/license" class="text-white hover:text-gray-400">
+                <i class="fas fa-gavel"></i> License
+            </a>
+
+            <!-- GitHub link -->
+            <a href="https://github.com/muhammad-fiaz/EMSUGI" class="text-white hover:text-gray-400" target="_blank">
+                <i class="fa-brands fa-github"></i> GitHub
+            </a>
+        </div>
+        <p class="text-white">&copy; 2024 Muhammad Fiaz. All Rights Reserved.</p>
+    </div>
 
 </body>
 </html>
