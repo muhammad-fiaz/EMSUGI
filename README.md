@@ -35,8 +35,6 @@ The **EMSUGI** is a sophisticated application designed to gather and analyze eme
 Below are some screenshots showing the features and layout of the system:
 ![Screenshot 2024-11-15 220010](https://github.com/user-attachments/assets/911c4be9-7c38-4c49-8866-4f871f255ffd)
 ![Screenshot 2024-11-15 220011](https://github.com/user-attachments/assets/05a52778-f5c2-4152-9067-c6b83a250666)
-
-
 ![Screenshot 2024-10-09 215822](https://github.com/user-attachments/assets/05ee531e-9fdd-4ff5-93e5-88b7b78fed2e)
 ![Screenshot 2024-10-09 215844](https://github.com/user-attachments/assets/1954ee0b-6b50-4599-874e-c754e476eb17)
 ![Screenshot 2024-10-09 215909](https://github.com/user-attachments/assets/50e2f263-b909-41ee-a3ef-faba59613287)
