@@ -27,7 +27,7 @@ def init_db():
     conn = sqlite3.connect('disaster_alerts.db')
     c = conn.cursor()
 
-    # Create the alerts history table if it does not exist
+    # Create the alerts records table if it does not exist
     c.execute('''
         CREATE TABLE IF NOT EXISTS alerts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

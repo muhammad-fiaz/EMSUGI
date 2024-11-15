@@ -100,7 +100,7 @@ def store_results_in_current_db(alerts):
 
 def store_results_in_db(alerts):
     """
-    Stores the fetched alerts in the alerts history table in the database.
+    Stores the fetched alerts in the alerts records table in the database.
 
     Args:
         alerts (list): A list of tuples containing the alert details.

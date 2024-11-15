@@ -1,4 +1,4 @@
-<!-- This Page is Still in Development for now I filled with placeholders   -->
+<!-- This Page is Still in Development for now I filled with placeholders -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,43 +20,38 @@
 
         <!-- Form with options on a single row -->
         <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
+            <h2 class="text-2xl mb-6 text-gray-900">Filter Options</h2>
             <form class="flex flex-wrap justify-between gap-4">
 
                 <!-- Location Selection -->
                 <div class="flex-1 min-w-[200px] mb-4">
                     <label for="location" class="block mb-2 text-sm font-medium text-gray-900">Location:</label>
                     <select id="location" name="location" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                        <option value="">Select a Location</option>
-                        <option value="New York">New York</option>
-                        <option value="Los Angeles">Los Angeles</option>
-                        <option value="Chicago">Chicago</option>
-                        <option value="Houston">Houston</option>
-                        <!-- Additional options can be added dynamically -->
+                        <option value="default">Select a Location</option>
                     </select>
                 </div>
 
-                <!-- Keywords Selection (Single Choice, Like Location) -->
+                <!-- Keywords Selection -->
                 <div class="flex-1 min-w-[200px] mb-4">
                     <label for="keywords" class="block mb-2 text-sm font-medium text-gray-900">Keywords:</label>
                     <select id="keywords" name="keywords" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                        <option value="">Select a Keyword</option>
-                        <option value="Prediction">Prediction</option>
-                        <option value="Analytics">Analytics</option>
-                        <option value="Data">Data</option>
-                        <option value="Trends">Trends</option>
-                        <!-- Additional options can be added dynamically -->
+                        <option value="default">Select a Keyword</option>
                     </select>
                 </div>
 
-                <!-- Tags Selection (Single Choice, Like Location) -->
+                <!-- Tags Selection -->
                 <div class="flex-1 min-w-[200px] mb-4">
                     <label for="tags" class="block mb-2 text-sm font-medium text-gray-900">Tags:</label>
                     <select id="tags" name="tags" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                        <option value="">Select a Tag</option>
-                        <option value="Urgent">Urgent</option>
-                        <option value="Important">Important</option>
-                        <option value="High Priority">High Priority</option>
-                        <!-- Additional options can be added dynamically -->
+                        <option value="default">Select a Tag</option>
+                    </select>
+                </div>
+
+                <!-- Priority Selection -->
+                <div class="flex-1 min-w-[200px] mb-4">
+                    <label for="priority" class="block mb-2 text-sm font-medium text-gray-900">Priority:</label>
+                    <select id="priority" name="priority" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <option value="default">Select a Priority</option>
                     </select>
                 </div>
 
@@ -64,7 +59,7 @@
                 <div class="flex-1 min-w-[200px] mb-4">
                     <label for="duration" class="block mb-2 text-sm font-medium text-gray-900">Duration:</label>
                     <select id="duration" name="duration" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                        <option value="">Select Duration</option>
+                        <option value="default">Select Duration</option>
                         <option value="1">1 Week</option>
                         <option value="2">2 Weeks</option>
                         <option value="3">1 Month</option>
@@ -73,17 +68,18 @@
                         <option value="6">1 Year</option>
                     </select>
                 </div>
-
-            </form>
+<div class="w-full left-3">
+    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg w-full sm:w-auto">Apply</button>
+</div>            </form>
         </div>
 
-        <!-- Timeline Series (Single Row) -->
+        <!-- Timeline Series -->
         <div class="bg-white p-6 rounded-lg shadow-lg mb-8">
             <h3 class="text-xl font-semibold mb-2">Prediction Timeline</h3>
             <canvas id="timeline-chart"></canvas>
         </div>
 
-        <!-- Chart Grid (2x2) -->
+        <!-- Chart Grid -->
         <div class="grid grid-cols-2 gap-6 mt-8">
             <!-- Histogram -->
             <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -111,6 +107,34 @@
         </div>
 
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Fetch data from the backend
+                const response = await fetch('/analysis-data');
+                const data = await response.json();
+
+                // Populate dropdowns
+                populateDropdown('location', data.locations);
+                populateDropdown('tags', data.tags);
+                populateDropdown('priority', data.priorities);
+                populateDropdown('keywords', data.keywords);
+            } catch (error) {
+                console.error('Error fetching analysis data:', error);
+            }
+        });
+
+        function populateDropdown(id, options) {
+            const dropdown = document.getElementById(id);
+            options.forEach(option => {
+                const opt = document.createElement('option');
+                opt.value = option;
+                opt.textContent = option;
+                dropdown.appendChild(opt);
+            });
+        }
+    </script>
 
     <script>
         // Sample Data for Prediction (replace this with real data from backend)
@@ -223,6 +247,7 @@
             }
         });
     </script>
+
 
 </body>
 </html>
