@@ -1,5 +1,7 @@
+import datetime
+import random
 
-from flask import jsonify
+from flask import jsonify, request
 
 from modules.db import get_db_connection
 
@@ -72,7 +74,43 @@ def fetch_analysis_data() -> dict:
 
 
 
+def get_predictions()-> dict:
+    """
+    Generate simulated prediction data based on selected filters such as location, tags, etc.
+    """
+    # Extract query parameters for filters
+    location = request.args.get('location', 'overall')
+    keywords = request.args.get('keywords', 'overall')
+    tags = request.args.get('tags', 'overall')
+    duration = int(request.args.get('duration', '30'))  # Default to 30 days
 
+    # Generate simulated prediction data (replace this with actual model logic)
+    timeline_dates = generate_dates(duration)
+    timeline_predictions = generate_predictions(len(timeline_dates))
+    histogram_data = [random.randint(10, 50) for _ in range(5)]
+    bar_data = [random.randint(50, 100) for _ in range(4)]
+    pie_data = [random.randint(20, 40) for _ in range(3)]
+
+    return jsonify({
+        'timeline': {
+            'dates': timeline_dates,
+            'predictions': timeline_predictions,
+        },
+        'histogram': histogram_data,
+        'bar_chart': bar_data,
+        'pie_chart': pie_data
+    })
+
+
+def generate_dates(duration):
+    """Generate dates for the timeline based on duration."""
+    start_date = datetime.datetime.now()
+    return [(start_date + datetime.timedelta(days=30 * i)).strftime('%Y-%m-%d') for i in range(duration)]
+
+
+def generate_predictions(n):
+    """Generate random prediction values."""
+    return [random.randint(50, 100) for _ in range(n)]
 
 
 

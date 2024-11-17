@@ -2,7 +2,7 @@ import os
 from flask import Flask
 
 from modules.routes import index, reports, analysis, records, license_router, notice, report
-from modules.api import fetch_analysis_data, regenerate_report, loading_api, cancel_report_generation
+from modules.api import fetch_analysis_data, regenerate_report, loading_api, cancel_report_generation, get_predictions
 
 
 def create_app():
@@ -24,5 +24,6 @@ def create_app():
     app.add_url_rule('/api/regenerate-report', 'regenerate-report', regenerate_report, methods=['POST'])
     app.add_url_rule('/cancel_report_generation', 'cancel_report_generation', cancel_report_generation,
                      methods=['POST'])
+    app.add_url_rule('/api/predictions', 'predictions', get_predictions, methods=['GET'])
 
     return app
