@@ -59,6 +59,7 @@ Below are some screenshots showing the features and layout of the system:
 ![Screenshot 2024-11-14](https://github.com/user-attachments/assets/6b17ecbd-3603-45dc-8340-b1c7d8c0b45f)
 
 
+
 > **NOTE:** These screenshots reflect the current state of the project's development and may change in the future as features evolve and improvements are made.
 
 ## Getting Started
