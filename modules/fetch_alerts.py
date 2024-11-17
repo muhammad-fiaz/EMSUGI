@@ -6,9 +6,13 @@ import requests
 from bs4 import BeautifulSoup
 import google.generativeai as genai
 from dotenv import load_dotenv
+from flask import session
 from logly import logly
 
-from report_general import fetch_article_content_and_tags, generate_keywords, generate_summary, determine_priority
+from modules.db import get_db_connection
+from modules.process import fetch_article_content_and_tags, generate_summary, generate_keywords, \
+    determine_priority
+from modules.utils.check_for_cancel import check_for_cancel
 
 # Get the Gemini API key from the environment variable
 gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -17,6 +21,7 @@ genai.configure(api_key=gemini_api_key)
 # Predefined emergency words for generating keywords
 EMERGENCY_WORDS = [...]  # Your emergency words list here
 from datetime import datetime  # Import datetime
+
 
 
 def fetch_and_store_alerts(location,topic, num_results=5):
@@ -44,6 +49,11 @@ def fetch_and_store_alerts(location,topic, num_results=5):
         soup = BeautifulSoup(response.text, 'html.parser')
 
         for li in soup.find_all('a', class_='title')[:num_results]:
+            # Check if cancellation has been requested before making the API call
+            if check_for_cancel():
+                logly.info("Report generation was canceled by the user.")
+                return "Process canceled by user."
+
             title = li.get_text() if li else "No title"
             link = li['href'] if li else "No link"
             country = location  # Use the user-provided location as the country
@@ -74,7 +84,7 @@ def store_results_in_current_db(alerts):
      Args:
          alerts (list): A list of tuples containing the alert details.
      """
-    conn = sqlite3.connect('disaster_alerts.db')
+    conn = get_db_connection()
     c = conn.cursor()
 
     # Check if the current_alerts table is empty
@@ -105,7 +115,7 @@ def store_results_in_db(alerts):
     Args:
         alerts (list): A list of tuples containing the alert details.
     """
-    conn = sqlite3.connect('disaster_alerts.db')
+    conn = get_db_connection()
     c = conn.cursor()
 
     # Append new alerts to the existing records without deleting
@@ -114,6 +124,10 @@ def store_results_in_db(alerts):
 
 
         try:
+            # Check if cancellation has been requested before making the API call
+            if check_for_cancel():
+                logly.info("Report generation was canceled by the user.")
+                return "Process canceled by user."
             logly.info(f"Storing alert in alerts table: {alert}")
             c.execute('''INSERT OR IGNORE INTO alerts (title, link, country, summary, keywords, tags, date, priority)
                           VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',

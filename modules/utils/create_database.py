@@ -1,9 +1,12 @@
 import sqlite3
 
+from modules.db import get_db_connection
+
+
 def init_db():
     """
     Initializes the database by creating necessary tables if they do not exist.
-    This function connects to the SQLite database 'disaster_alerts.db' and creates
+    This function connects to the SQLite database '../../disaster_alerts.db' and creates
     three tables: alerts, current_alerts, and gemini_reports.
 
     Tables:
@@ -24,7 +27,7 @@ def init_db():
     - created_at: The timestamp when the report was created (only in gemini_reports table).
     - priority: The priority level of the alert or report (e.g., low, medium, high).
     """
-    conn = sqlite3.connect('disaster_alerts.db')
+    conn = get_db_connection()
     c = conn.cursor()
 
     # Create the alerts records table if it does not exist
@@ -69,3 +72,4 @@ def init_db():
 
     conn.commit()
     conn.close()
+

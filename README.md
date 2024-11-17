@@ -96,15 +96,42 @@ running, and managing the EMSUGI application in a Docker container.
 ### Folder Structure:
 ```bash
 .
-├── app.py                  # Main Flask application
-├── fetch_alerts.py         # Fetch report from online
-├── generate.py             # Return a generated AI report based on data
-├── report_general.py       # Return a generated summary and keywords and tags from fetched articles
-├── templates/              # HTML templates
+├── launch.py                  # Launch Flask application
+├── modules/                # Application modules
+│   ├── api/                # API endpoints
+│   │   ├── __init__.py    # Initialize API endpoints
+│   │   ├── loading.py      # Loading API endpoint
+│   │   ├── cancel_process.py      # Cancel the report generation process
+│   │   .
+│   │   .
+│   ├── fetch_alerts.py     # Fetch report from online
+│   ├── generate.py  # Generate report
+│   ├── process.py  # Process the report
+│   ├── router.py  # Router for the application
+│   ├── db.py # Database connection
+│   ├── download.py # Download the models
+│   ├── async_worker.py # Async worker for the application
+│   ├── routes/            # Application routes
+│   │   ├── __init__.py    # Initialize application routes
+│   │   ├── index_page.py      # Index Page route
+│   │   ├── report_page.py      # Report Page route
+│   │   ├── analytics_page.py      # Analytics Page route
+│   │   ├── notice_page.py      # Notice Page route
+│   │   ├── license_page.py      # License Page route
+│   │   ├── records_page.py      # Records Page route
+│   │   ├── reports_page.py      # Reports Page route
+│   ├── utils/              # Utility functions
+│   │   ├── __init__.py    # Initialize utility functions
+│   │   └── progress.py     # Progress utility functions
+│   │   └── check_for_cancel.py # Check if the report generation has been canceled
+│   │   .
+│   │   .
+├── templates/              # Contains HTML templates
+│   └── index.html          # Main HTML file
 ├── static/                 # Static files (CSS, JS, images)
 │   ├── styles.css          # Global styles
-├── database.py             # Used to create DB
-├── database_alerts.db      # Stored Database
+├── create_database.py      # Used to create DB
+├─��� database_alerts.db      # Stored Database
 ├── Dockerfile              # Docker configuration file
 ├── CODE_OF_CONDUCT.md      # Code of conduct for contributors
 ├── LICENSE                 # Open-source license for the project

@@ -1,13 +1,18 @@
 import os
 import torch
+from flask import session
 from logly import logly
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, pipeline
 import google.generativeai as genai
 from dotenv import load_dotenv
 
+from modules.utils.check_for_cancel import check_for_cancel
+
 # Load environment variables from .env file
 load_dotenv()
 gemini_api_key = os.getenv("GEMINI_API_KEY")
+gemini_model_name = os.getenv("GEMINI_MODEL_NAME")
+
 model_name = os.getenv("MODEL_NAME")
 genai.configure(api_key=gemini_api_key)
 
@@ -73,20 +78,20 @@ class Generate:
 
         # Define the structured prompt to guide model output
         prompt_template = (
-            "You are an expert emergency reporter tasked with creating a concise report on critical events like disasters, emergencies, pandemics, and wars. "
-            "Use the following emergency alerts to generate a clear and actionable report. The report should include:\n\n"
-            "1. **Title**: A clear and meaningful title for the emergency.\n"
-            "2. **Explanation**: A brief but detailed explanation of the emergency.\n"
-            "3. **Precautions**: Actionable precautions for people to stay safe.\n\n"
+            "You are an expert emergency reporter. Using the following emergency alerts, create a brief report including:\n\n"
+            "1. **Title**: A meaningful title for the emergency.\n"
+            "2. **Explanation**: A brief summary of the emergency.\n"
+            "3. **Precautions**: Clear, actionable steps to stay safe.\n\n"
             "### Emergency Alerts:\n"
             f"{formatted_data}\n\n"
-            "Generate a professional report based on the data. Ensure the content is directly related to emergencies and public safety."
+            "Generate a concise report based on the data, focusing on safety and emergency response."
         )
 
         if self.api:
             try:
+
                 # Generate report text using the generative AI API
-                report_text = genai.GenerativeModel(model_name='gemini-1.5-flash')
+                report_text = genai.GenerativeModel(model_name=gemini_model_name)
                 response = report_text.generate_content(prompt_template)
 
                 # Ensure the response is valid
@@ -103,6 +108,7 @@ class Generate:
 
         else:
             try:
+
                 # Set device and quantization for local model
                 device = "cuda" if torch.cuda.is_available() else "cpu"
                 quantization = "4-bit"
