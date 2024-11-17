@@ -48,15 +48,15 @@ The **EMSUGI** is a sophisticated application designed to gather and analyze eme
 
 Below are some screenshots showing the features and layout of the system:
 
-![Screenshot 2024-11-14 220005](https://github.com/user-attachments/assets/0021a145-ca8d-44c3-a333-0d51e949b346)
-![Screenshot 2024-10-09 215759](https://github.com/user-attachments/assets/b740eb1b-edd2-44e3-9abb-f655637beaf4)
-![Screenshot 2024-10-09 215822](https://github.com/user-attachments/assets/05ee531e-9fdd-4ff5-93e5-88b7b78fed2e)
-![Screenshot 2024-10-09 215844](https://github.com/user-attachments/assets/1954ee0b-6b50-4599-874e-c754e476eb17)
-![Screenshot 2024-10-09 215909](https://github.com/user-attachments/assets/50e2f263-b909-41ee-a3ef-faba59613287)
-![Screenshot 2024-10-09 215937](https://github.com/user-attachments/assets/249d9f8f-7c31-49be-9c75-f0367880280f)
-![Screenshot 2024-10-09 220003](https://github.com/user-attachments/assets/63dc28e6-f028-4e82-8ec9-b393c19d59fe)
-![Screenshot 2024-11-14 220006](https://github.com/user-attachments/assets/1381e445-8603-48c4-b7e1-9276fa89965d)
-![Screenshot 2024-11-14 220007](https://github.com/user-attachments/assets/6b17ecbd-3603-45dc-8340-b1c7d8c0b45f)
+![Screenshot 2024-11-17](https://github.com/user-attachments/assets/41b35a5b-043c-47db-b19c-9ae92a423356)
+![Screenshot 2024-11-17](https://github.com/user-attachments/assets/78edc4fa-53a8-4427-9cdb-8b58bd9ecbb5)
+![Screenshot 2024-10-09](https://github.com/user-attachments/assets/05ee531e-9fdd-4ff5-93e5-88b7b78fed2e)
+![Screenshot 2024-10-09](https://github.com/user-attachments/assets/1954ee0b-6b50-4599-874e-c754e476eb17)
+![Screenshot 2024-10-09](https://github.com/user-attachments/assets/50e2f263-b909-41ee-a3ef-faba59613287)
+![Screenshot 2024-10-09](https://github.com/user-attachments/assets/249d9f8f-7c31-49be-9c75-f0367880280f)
+![Screenshot 2024-10-09](https://github.com/user-attachments/assets/63dc28e6-f028-4e82-8ec9-b393c19d59fe)
+![Screenshot 2024-11-14](https://github.com/user-attachments/assets/1381e445-8603-48c4-b7e1-9276fa89965d)
+![Screenshot 2024-11-14](https://github.com/user-attachments/assets/6b17ecbd-3603-45dc-8340-b1c7d8c0b45f)
 
 
 > **NOTE:** These screenshots reflect the current state of the project's development and may change in the future as features evolve and improvements are made.
