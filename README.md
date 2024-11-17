@@ -31,7 +31,7 @@
 
 The **EMSUGI** is a sophisticated application designed to gather and analyze emergency alerts from various sources. It leverages generative AI to predict future incidents based on historical data and current trends. This system aims to enhance the efficiency of emergency responses by providing insightful reports and visual analytics.
 
-> This Project is Still in Active Development!
+If you like this project, **don't forget to star this repo** ⭐ and **fork it** if you want to contribute! Your contributions and support are greatly appreciated!
 
 ## Key Features:
 - **Real-Time Alert Monitoring**: Fetches and stores emergency alerts across different countries.
