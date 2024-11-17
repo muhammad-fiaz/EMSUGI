@@ -1,4 +1,18 @@
 <h1 align="center">🚨 EMSUGI 🚨</h1>
+<p align="center">
+  <img src="https://github.com/muhammad-fiaz/EMSUGI/actions/workflows/github-code-scanning/codeql/badge.svg" alt="CodeQL" />
+  <img src="https://github.com/muhammad-fiaz/EMSUGI/actions/workflows/dependabot/dependabot-updates/badge.svg" alt="Dependabot Updates" />
+  <img src="https://img.shields.io/github/license/muhammad-fiaz/EMSUGI" alt="License" />
+  <img src="https://img.shields.io/github/last-commit/muhammad-fiaz/EMSUGI" alt="Last Commit" />
+  <img src="https://img.shields.io/github/issues-pr/muhammad-fiaz/EMSUGI" alt="Pull Requests" />
+  <img src="https://img.shields.io/github/issues/muhammad-fiaz/EMSUGI" alt="Issues" />
+  <img src="https://img.shields.io/badge/maintainers-muhammad--fiaz-blue" alt="Maintainers" />
+  <img src="https://img.shields.io/github/contributors/muhammad-fiaz/EMSUGI" alt="Contributors" />
+  <a href="https://github.com/sponsors/muhammad-fiaz">
+    <img src="https://img.shields.io/badge/sponsor-muhammad--fiaz-ff69b4" alt="Sponsor" />
+  </a>
+</p>
+
 
 ## Table of Contents
 - [Project Overview](#project-overview)
