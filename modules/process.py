@@ -1,15 +1,12 @@
-import os
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 import nltk
 from sklearn.feature_extraction.text import TfidfVectorizer
 import time
 import random
 from logly import logly
 
-# CSV file for storing news articles
-CSV_FILE = "disaster_alerts.csv"
+from modules.utils.check_for_cancel import check_for_cancel
 
 # Predefined emergency words for generating keywords
 EMERGENCY_WORDS = ['disaster', 'emergency', 'crisis', 'alert', 'warning', 'evacuation', 'flood', 'earthquake', 'fire',
@@ -35,57 +32,6 @@ def get_random_user_agent():
     return random.choice(user_agents)
 
 
-# Step 1: Function to Fetch Disaster and Emergency Alerts Using Bing News Search
-def search_bing_for_alerts(query, num_results=5):
-    """
-      Fetches disaster and emergency alerts using Bing News Search.
-
-      Args:
-          query (str): The search query.
-          num_results (int): The number of results to fetch. Defaults to 5.
-
-      Returns:
-          list: A list of dictionaries containing alert details.
-    """
-    logly.info(f"Starting search for '{query}' in Bing News...")
-    search_url = f"https://www.bing.com/news/search?q={query}&FORM=HDRSC7"
-
-    # Rotate user agents to avoid detection
-    headers = {'User-Agent': get_random_user_agent()}
-
-    try:
-        response = requests.get(search_url, headers=headers, timeout=10)
-        response.raise_for_status()  # Raises an error for 4xx/5xx responses
-
-        logly.info("Search successful. Processing results...")
-        soup = BeautifulSoup(response.text, 'html.parser')
-        results = []
-
-        for li in soup.find_all('a', class_='title')[:num_results]:
-            title = li.get_text() if li else "No title"
-            link = li['href'] if li else "No link"
-            country = "Israel"  # Extract country name if available
-            content, tags = fetch_article_content_and_tags(link)  # Calls the modified function with retries
-            keywords = generate_keywords(title, content)
-            summary = generate_summary(content)
-
-            results.append({
-                'title': title,
-                'link': link,
-                'country': country,
-                'summary': summary,
-                'keywords': keywords,
-                'tags': tags
-            })
-
-        logly.info(f"Found {len(results)} results.")
-        return results
-
-    except requests.exceptions.RequestException as e:
-        logly.error(f"Failed to fetch search results: {e}")
-        return []
-
-
 # Function to fetch article content and generate tags with recursive retries
 def fetch_article_content_and_tags(url, retries=3):
     """
@@ -99,6 +45,10 @@ def fetch_article_content_and_tags(url, retries=3):
            tuple: A tuple containing the article content and a list of tags.
     """
     try:
+        # Check if cancellation has been requested before making the API call
+        if check_for_cancel():
+            logly.info("Report generation was canceled by the user.")
+            return "Process canceled by user."
         response = requests.get(url, headers={'User-Agent': get_random_user_agent()})
         response.raise_for_status()  # Will raise an error for 4xx/5xx responses
 

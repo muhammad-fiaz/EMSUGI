@@ -266,7 +266,7 @@
         <div class="form-container mb-4 w-full flex justify-center">
             <!-- Card Container for Form -->
             <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-8xl">
-                <form id="alertForm" action="/loading" method="POST" class="flex gap-6"> <!-- Increased gap here -->
+                <form id="alertForm" action="/api/loading" method="POST" class="flex gap-6"> <!-- Increased gap here -->
                     <!-- Topic Input -->
                     <div class="relative w-1/2 pr-4">
                         <input type="text" id="topic" name="topic" required
@@ -299,55 +299,81 @@
 <div class="fixed bottom-0 right-0 p-4">
     <span class="text-white px-3 py-1 underline">Version 1.0.0</span>
 </div>
-    <!-- Loading Popup -->
-    <div id="loading" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50" style="display: none;">
-        <div class="text-center bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
-            <div id="lottie-animation" class="w-64 h-64 mb-4"></div>
-            <h2 class="text-2xl text-gray-600">Please wait while we are generating...</h2>
-        </div>
+<!-- Loading Popup -->
+<div id="loading" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50" style="display: none;">
+    <div class="text-center bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
+        <div id="lottie-animation" class="w-64 h-64 mb-4"></div>
+        <h2 class="text-2xl text-gray-600">Please wait while we are generating...</h2>
+
+        <!-- Cancel Button -->
+        <button id="cancelButton" action="{{ url_for('cancel_report_generation') }}" class="mt-4 px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700">
+            Cancel Process
+        </button>
     </div>
+</div>
+
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const form = document.getElementById('alertForm');
-            const loading = document.getElementById('loading');
+       document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById('alertForm');
+    const loading = document.getElementById('loading');
+    const cancelButton = document.getElementById('cancelButton');
 
+    let abortController = null;
 
-            // Initialize Lottie animation
-            const animation = lottie.loadAnimation({
-                container: document.getElementById('lottie-animation'), // the DOM element that will contain the animation
-                renderer: 'svg',
-                loop: true,
-                autoplay: true,
-                path: 'https://lottie.host/00db5f22-8176-422c-91e2-360867e775a2/o2rLveFQvV.json' // URL of the Lottie animation
-            });
+    // Initialize Lottie animation
+    const animation = lottie.loadAnimation({
+        container: document.getElementById('lottie-animation'), // the DOM element that will contain the animation
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: 'https://lottie.host/00db5f22-8176-422c-91e2-360867e775a2/o2rLveFQvV.json' // URL of the Lottie animation
+    });
 
-            // Submit form with loading animation
-            form.addEventListener('submit', function(event) {
-                event.preventDefault(); // Prevent default form submission
-                loading.style.display = 'flex'; // Show loading popup
+    // Submit form with loading animation
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+        loading.style.display = 'flex'; // Show loading popup
 
-                const formData = new FormData(form);
+        // Create an AbortController to manage cancellation
+        abortController = new AbortController();
+        const signal = abortController.signal;
 
-                // Submit the form data with fetch
-                fetch('/loading', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'completed') {
-                        window.location.href = '/report'; // Redirect to report page
-                    } else {
-                        throw new Error('Report generation incomplete');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    loading.style.display = 'none'; // Hide loading animation on error
-                });
-            });
+        const formData = new FormData(form);
+
+        // Submit the form data with fetch
+        fetch('/api/loading', {
+            method: 'POST',
+            body: formData,
+            signal: signal
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'completed') {
+                window.location.href = '/report'; // Redirect to report page
+            } else {
+                throw new Error('Report generation incomplete');
+            }
+        })
+        .catch(error => {
+            if (error.name === 'AbortError') {
+                console.log('Process was canceled');
+            } else {
+                console.error('Error:', error);
+            }
+            loading.style.display = 'none'; // Hide loading animation on error or cancel
         });
+    });
+
+    // Cancel button functionality
+    cancelButton.addEventListener('click', function() {
+        if (abortController) {
+            abortController.abort(); // Abort the ongoing fetch request
+        }
+        loading.style.display = 'none'; // Hide the loading popup
+    });
+});
+
     </script>
 
     <div class="footer fixed bottom-0 left-0 right-0  text-center py-4">

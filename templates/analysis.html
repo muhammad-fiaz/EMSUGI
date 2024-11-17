@@ -112,7 +112,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 // Fetch data from the backend
-                const response = await fetch('/analysis-data');
+                const response = await fetch('/api/analysis-data');
                 const data = await response.json();
 
                 // Populate dropdowns

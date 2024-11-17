@@ -39,7 +39,7 @@
             button.disabled = true; // Disable the button while loading
             button.innerText = 'Loading...'; // Change button text to indicate loading
 
-            const response = await fetch('/regenerate-report', {
+            const response = await fetch('/api/regenerate-report', {
                 method: 'POST',
             });
 
