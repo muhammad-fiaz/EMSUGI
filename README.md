@@ -48,17 +48,15 @@ If you like this project, **don't forget to star this repo** ⭐ and **fork it**
 
 Below are some screenshots showing the features and layout of the system:
 
-![Screenshot 2024-11-17](https://github.com/user-attachments/assets/41b35a5b-043c-47db-b19c-9ae92a423356)
-![Screenshot 2024-11-17](https://github.com/user-attachments/assets/78edc4fa-53a8-4427-9cdb-8b58bd9ecbb5)
-![Screenshot 2024-10-09](https://github.com/user-attachments/assets/05ee531e-9fdd-4ff5-93e5-88b7b78fed2e)
-![Screenshot 2024-10-09](https://github.com/user-attachments/assets/1954ee0b-6b50-4599-874e-c754e476eb17)
-![Screenshot 2024-10-09](https://github.com/user-attachments/assets/50e2f263-b909-41ee-a3ef-faba59613287)
-![Screenshot 2024-10-09](https://github.com/user-attachments/assets/249d9f8f-7c31-49be-9c75-f0367880280f)
-![Screenshot 2024-10-09](https://github.com/user-attachments/assets/63dc28e6-f028-4e82-8ec9-b393c19d59fe)
-![Screenshot 2024-11-14](https://github.com/user-attachments/assets/1381e445-8603-48c4-b7e1-9276fa89965d)
-![Screenshot 2024-11-14](https://github.com/user-attachments/assets/6b17ecbd-3603-45dc-8340-b1c7d8c0b45f)
-
-
+<img src="https://github.com/user-attachments/assets/41b35a5b-043c-47db-b19c-9ae92a423356" width="300">
+<img src="https://github.com/user-attachments/assets/c9f39560-125f-4481-a14c-642abaed5cd7" width="300">
+<img src="https://github.com/user-attachments/assets/78edc4fa-53a8-4427-9cdb-8b58bd9ecbb5" width="300">
+<img src="https://github.com/user-attachments/assets/38c8673f-d62b-4ddd-b1a0-9ff19068603a" width="300">
+<img src="https://github.com/user-attachments/assets/e64d8b90-4d55-425c-b69d-3ad38bce5d5c" width="300">
+<img src="https://github.com/user-attachments/assets/b8c5bed8-d13d-4384-b20d-a9de6d3bba94" width="300">
+<img src="https://github.com/user-attachments/assets/658f0d48-ca7b-457c-96af-1b608db89c2e" width="300">
+<img src="https://github.com/user-attachments/assets/1381e445-8603-48c4-b7e1-9276fa89965d" width="300">
+<img src="https://github.com/user-attachments/assets/6b17ecbd-3603-45dc-8340-b1c7d8c0b45f" width="300">
 
 > **NOTE:** These screenshots reflect the current state of the project's development and may change in the future as features evolve and improvements are made.
 
