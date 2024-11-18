@@ -49,7 +49,6 @@ If you like this project, **don't forget to star this repo** ⭐ and **fork it**
 Below are some screenshots showing the features and layout of the system:
 
 <img src="https://github.com/user-attachments/assets/41b35a5b-043c-47db-b19c-9ae92a423356" width="200">
-<img src="https://github.com/user-attachments/assets/c9f39560-125f-4481-a14c-642abaed5cd7" width="200">
 <img src="https://github.com/user-attachments/assets/78edc4fa-53a8-4427-9cdb-8b58bd9ecbb5" width="200">
 <img src="https://github.com/user-attachments/assets/38c8673f-d62b-4ddd-b1a0-9ff19068603a" width="200">
 <img src="https://github.com/user-attachments/assets/e64d8b90-4d55-425c-b69d-3ad38bce5d5c" width="200">
