@@ -19,7 +19,7 @@ gemini_api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=gemini_api_key)
 
 # Predefined emergency words for generating keywords
-EMERGENCY_WORDS = [...]  # Your emergency words list here
+EMERGENCY_WORDS = ["earthquake", "flood", "storm", "fire", "evacuation"]
 from datetime import datetime  # Import datetime
 
 

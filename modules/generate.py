@@ -1,24 +1,22 @@
 import os
 import torch
 from flask import session
+from transformers import AutoTokenizer, BitsAndBytesConfig, pipeline
 from logly import logly
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, pipeline
+from langchain_core.prompts import PromptTemplate
 import google.generativeai as genai
 from dotenv import load_dotenv
-
 from modules.utils.check_for_cancel import check_for_cancel
 
 # Load environment variables from .env file
 load_dotenv()
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 gemini_model_name = os.getenv("GEMINI_MODEL_NAME")
-
 model_name = os.getenv("MODEL_NAME")
 genai.configure(api_key=gemini_api_key)
 
 # Configuration for 4-bit quantization
 quantization_config = BitsAndBytesConfig(load_in_4bit=True)
-
 
 def pipeline_tunnel(model, device):
     """
@@ -36,12 +34,9 @@ def pipeline_tunnel(model, device):
     return pipeline(
         "text-generation",
         model=model,
-        model_kwargs={
-            "torch_dtype": torch.float16,
-        },
+        model_kwargs={"torch_dtype": torch.float16},  # Model precision
         device=device,
     )
-
 
 class Generate:
     """
@@ -76,23 +71,29 @@ class Generate:
         # Format report data as a structured list for input
         formatted_data = "\n".join([f"- **{item['title']}**: {item['summary']}" for item in self.report_data])
 
-        # Define the structured prompt to guide model output
-        prompt_template = (
+        # Define the structured prompt to guide model output using LangChain PromptTemplate
+        prompt_template = PromptTemplate.from_template(
             "You are an expert emergency reporter. Using the following emergency alerts, create a brief report including:\n\n"
             "1. **Title**: A meaningful title for the emergency.\n"
             "2. **Explanation**: A brief summary of the emergency.\n"
             "3. **Precautions**: Clear, actionable steps to stay safe.\n\n"
             "### Emergency Alerts:\n"
-            f"{formatted_data}\n\n"
+            "{context}\n\n"
             "Generate a concise report based on the data, focusing on safety and emergency response."
         )
 
+        # Truncate context if too long
+        context_limit = 512  # Adjust based on model constraints
+        truncated_context = formatted_data[:context_limit]
+
+        # Format the prompt using LangChain PromptTemplate
+        formatted_prompt = prompt_template.format(context=truncated_context)
+
         if self.api:
             try:
-
-                # Generate report text using the generative AI API
+                # Generate report text using the Gemini API
                 report_text = genai.GenerativeModel(model_name=gemini_model_name)
-                response = report_text.generate_content(prompt_template)
+                response = report_text.generate_content(formatted_prompt)
 
                 # Ensure the response is valid
                 if response and hasattr(response, 'text') and response.text.strip():
@@ -108,35 +109,29 @@ class Generate:
 
         else:
             try:
-
                 # Set device and quantization for local model
                 device = "cuda" if torch.cuda.is_available() else "cpu"
-                quantization = "4-bit"
-                quantization_config = BitsAndBytesConfig(
-                    load_in_4bit=True) if quantization == "4-bit" else BitsAndBytesConfig(load_in_8bit=True)
-
-                # Load tokenizer and text generation pipeline
                 tokenizer = AutoTokenizer.from_pretrained(model_name, quantization_config=quantization_config)
                 pipeline_model = pipeline_tunnel(model_name, device)
 
                 # Generate report using local model pipeline
-                logly.info(f"Prompt: {prompt_template}")
+                logly.info(f"Prompt: {formatted_prompt}")
                 outputs = pipeline_model(
-                    prompt_template,
-                    max_new_tokens=1250,
+                    formatted_prompt,
+                    max_new_tokens=512,
                     do_sample=True,
                     temperature=0.7,
                     top_k=50,
                     top_p=0.95
                 )
 
-                # Log the full generated text
-                generated_text = outputs[0]["generated_text"][len(prompt_template):]
+                # Extract the generated text
+                generated_text = outputs[0]["generated_text"][len(formatted_prompt):].strip()
 
                 # Check if the generated text is empty
-                if generated_text.strip():
+                if generated_text:
                     logly.info(f"Generated report: {generated_text}")
-                    return generated_text
+                    return f"### Emergency Report\n\n{generated_text}"
                 else:
                     logly.error("Generated report is empty or invalid.")
                     return "Error: Generated report is empty or invalid."
